@@ -53,7 +53,7 @@ async fn main() {
     // Create client
     let client = serenity::ClientBuilder::new(token, serenity::GatewayIntents::MESSAGE_CONTENT)
         .framework(framework)
-        .event_handler(Handler)
+        .event_handler(handler::Handler)
         .await;
 
     // Start client
