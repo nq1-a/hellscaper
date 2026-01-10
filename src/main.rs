@@ -5,6 +5,7 @@ use poise::serenity_prelude as serenity;
 use tokio;
 
 mod commands;
+mod handler;
 
 pub struct Data {}
 pub type Error = Box<dyn std::error::Error + Send + Sync>;
@@ -39,10 +40,6 @@ async fn main() {
                 commands::random::roll(),
                 commands::util::ping(),
             ],
-            prefix_options: poise::PrefixFrameworkOptions {
-                prefix: Some(".".into()),
-                ..Default::default()
-            },
             ..Default::default()
         })
         .setup(|ctx, _, fwk| {
@@ -56,6 +53,7 @@ async fn main() {
     // Create client
     let client = serenity::ClientBuilder::new(token, serenity::GatewayIntents::MESSAGE_CONTENT)
         .framework(framework)
+        .event_handler(Handler)
         .await;
 
     // Start client
