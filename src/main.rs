@@ -51,7 +51,7 @@ async fn main() {
         .build();
 
     // Create client
-    let client = serenity::ClientBuilder::new(token, serenity::GatewayIntents::non_privileged() | serenity::GatewayIntents::MESSAGE_CONTENT)
+    let client = serenity::ClientBuilder::new(token, serenity::GatewayIntents::default() | serenity::GatewayIntents::MESSAGE_CONTENT)
         .framework(framework)
         .event_handler(handler::Handler)
         .await;
