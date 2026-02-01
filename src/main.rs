@@ -6,8 +6,12 @@ use tokio;
 
 mod commands;
 mod handler;
+mod types;
 
-pub struct Data {}
+pub struct Data {
+    pub arc_ids: Vec<u16>,
+}
+
 pub type Error = Box<dyn std::error::Error + Send + Sync>;
 pub type Context<'a> = poise::Context<'a, Data, Error>;
 
@@ -38,6 +42,7 @@ async fn main() {
         .options(poise::FrameworkOptions {
             commands: vec![
                 commands::random::roll(),
+                commands::random::shoot(),
                 commands::util::ping(),
             ],
             ..Default::default()
@@ -45,7 +50,9 @@ async fn main() {
         .setup(|ctx, _, fwk| {
             Box::pin(async move {
                 poise::builtins::register_in_guild(ctx, &fwk.options().commands, serenity::GuildId::new(1241868193014743070)).await?;
-                Ok(Data {})
+                Ok(Data {
+                    arc_ids: vec![],
+                })
             })
         })
         .build();
