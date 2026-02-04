@@ -1,5 +1,7 @@
+use std::collections::HashMap;
 use std::fs::{read_to_string as read_fs, write as write_fs};
 use std::io;
+use std::sync::Mutex;
 
 use poise::serenity_prelude as serenity;
 use tokio;
@@ -8,8 +10,10 @@ mod commands;
 mod handler;
 mod types;
 
+use types::arc::Campaign;
+
 pub struct Data {
-    pub arc_ids: Vec<u16>,
+    pub campaigns: Mutex<HashMap<String, Campaign>>,
 }
 
 pub type Error = Box<dyn std::error::Error + Send + Sync>;
@@ -41,6 +45,9 @@ async fn main() {
     let framework = poise::Framework::<Data, Error>::builder()
         .options(poise::FrameworkOptions {
             commands: vec![
+                commands::party::partyjoin(),
+                commands::party::partynew(),
+                commands::random::flip(),
                 commands::random::roll(),
                 commands::random::shoot(),
                 commands::util::ping(),
@@ -51,7 +58,7 @@ async fn main() {
             Box::pin(async move {
                 poise::builtins::register_in_guild(ctx, &fwk.options().commands, serenity::GuildId::new(1241868193014743070)).await?;
                 Ok(Data {
-                    arc_ids: vec![],
+                    campaigns: Mutex::new(HashMap::new()),
                 })
             })
         })

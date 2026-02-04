@@ -1,5 +1,3 @@
-//use poise::serenity_prelude as serenity;
-
 use crate::{Context, Error};
 
 #[poise::command(slash_command)]
@@ -9,7 +7,7 @@ pub async fn ping(ctx: Context<'_>) -> Result<(), Error> {
     if millis == 0 {
        ctx.say("bot has not yet performed a full heartbeat --- please try again later").await?; 
     } else {
-        ctx.say(format!("**pong!**\ndelay: {} ms", ctx.ping().await.as_millis())).await?;
+        ctx.say(format!("**PONG!**\nDelay: {} ms", ctx.ping().await.as_millis())).await?;
     }
 
     Ok(())

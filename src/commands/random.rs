@@ -1,7 +1,18 @@
 use rand::Rng;
 
 use crate::{Context, Error};
-use crate::types::*;
+use crate::types::traits::Bias;
+use crate::types::weapon::Weapon;
+
+#[poise::command(slash_command)]
+pub async fn flip(ctx: Context<'_>) -> Result<(), Error> {
+    ctx.say(
+        if rand::thread_rng().gen_range(0..2) == 1 {"HEADS (1)"}
+        else {"TAILS (0)"}
+    ).await?;
+
+    Ok(())
+}
 
 #[poise::command(slash_command)]
 pub async fn roll(
