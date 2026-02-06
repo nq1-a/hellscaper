@@ -38,6 +38,7 @@ pub enum Weapon {
 impl Weapon {
     pub fn jammable(&self) -> bool {
         match self {
+            Self::electron_gun  => false,
             Self::laser         => false,
             Self::pipe          => false,
             Self::server_ban    => false,
