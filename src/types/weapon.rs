@@ -1,7 +1,7 @@
 use crate::types::traits::Bias;
 
 #[allow(non_camel_case_types)]
-#[derive(Debug, poise::ChoiceParameter)]
+#[derive(Debug, PartialEq, poise::ChoiceParameter)]
 pub enum Weapon {
     machine,
     derringer,
@@ -38,6 +38,7 @@ pub enum Weapon {
 impl Weapon {
     pub fn jammable(&self) -> bool {
         match self {
+            Self::laser         => false,
             Self::pipe          => false,
             Self::server_ban    => false,
             Self::slingshot     => false,
@@ -56,16 +57,16 @@ impl Bias for Weapon {
             Self::machine       => -6,
             Self::derringer     => -4,
             Self::pipe          => -3,
-            Self::shotgun       => -2,
             Self::slingshot     => -2,
             Self::thrown_misc   => -2,
-            Self::zip           => -2,
             Self::musket        => -1,
             Self::spit          => -1,
-            Self::thrown_blade  => -1,
-            Self::pistol        =>  0,
+            Self::zip           => -1,
             Self::revolver      =>  0,
+            Self::shotgun       =>  0,
             Self::submachine    =>  0,
+            Self::thrown_blade  =>  0,
+            Self::pistol        =>  1,
             Self::carbine       =>  1,
             Self::railgun       =>  1,
             Self::rifle         =>  1,
@@ -76,7 +77,7 @@ impl Bias for Weapon {
             Self::coilgun       =>  3,
             Self::varmint       =>  3,
             Self::laser         =>  4,
-            Self::sniper        =>  5,
+            Self::sniper        =>  4,
             Self::server_ban    =>  999,
         }
     }

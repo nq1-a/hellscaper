@@ -66,7 +66,7 @@ pub async fn shoot(
     let roll: i32 = if ad >= 0 {*rolls.iter().max().unwrap()} else {*rolls.iter().min().unwrap()};
 
     // NAT
-    let nat_min: bool = roll == 1;
+    let nat_min: bool = roll == 1 || (weapon == Weapon::railgun && roll == 2);
     let nat: bool = nat_min || roll == 20;
 
     // Build message
@@ -79,7 +79,7 @@ pub async fn shoot(
         res += if nat_min {
                     if weapon.jammable() {"**JAMMED** -- "}
                     else {"**MISS** -- "}}
-               else {"**HIT** -- "};
+               else {"**CRIT!** -- "};
         res += &format!("NAT {}", roll);
     }
 
