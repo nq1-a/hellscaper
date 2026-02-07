@@ -2,6 +2,7 @@ use std::fs::{read_to_string as read_fs, write as write_fs};
 use std::io;
 use std::sync::Mutex;
 
+use config::Config;
 use poise::serenity_prelude as serenity;
 use tokio::time::{Duration, sleep};
 
@@ -86,7 +87,10 @@ async fn main() {
             Box::pin(async move {
                 poise::builtins::register_in_guild(ctx, &fwk.options().commands, serenity::GuildId::new(1241868193014743070)).await?;
                 
-                let mut data = serde_json::from_str::<Data>(&read_fs("state.json").unwrap()).unwrap();
+                let mut data: Data = serde_json::from_str::<Data>(
+                    &read_fs("state.json").unwrap_or_default()
+                ).unwrap_or_default();
+
                 data.ready = Mutex::new(false);
                 Ok(data)
             })

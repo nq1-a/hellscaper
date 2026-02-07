@@ -5,7 +5,7 @@ use serde::{Serialize, Deserialize};
 
 use crate::types::arc::Campaign;
 
-#[derive(Serialize, Deserialize)]
+#[derive(Default, Serialize, Deserialize)]
 pub struct Data {
     pub campaigns: Mutex<HashMap<String, Campaign>>,
     pub ready: Mutex<bool>,
