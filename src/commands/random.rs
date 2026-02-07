@@ -4,7 +4,10 @@ use crate::{Context, Error};
 use crate::types::traits::Bias;
 use crate::types::weapon::Weapon;
 
-#[poise::command(slash_command)]
+#[poise::command(
+    slash_command,
+    description_localized("en-US", "Flip a coin")
+)]
 pub async fn flip(ctx: Context<'_>) -> Result<(), Error> {
     ctx.say(
         if rand::thread_rng().gen_range(0..2) == 1 {"HEADS (1)"}
@@ -14,7 +17,10 @@ pub async fn flip(ctx: Context<'_>) -> Result<(), Error> {
     Ok(())
 }
 
-#[poise::command(slash_command)]
+#[poise::command(
+    slash_command,
+    description_localized("en-US", "Roll a die")
+)]
 pub async fn roll(
     ctx: Context<'_>,
     #[description = "Side count"] sides: u32,
@@ -23,7 +29,10 @@ pub async fn roll(
     Ok(())
 }
 
-#[poise::command(slash_command)]
+#[poise::command(
+    slash_command,
+    description_localized("en-US", "Use a ranged weapon")
+)]
 pub async fn shoot(
     ctx: Context<'_>,
     #[description = "Your weapon"] weapon: Weapon,

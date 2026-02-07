@@ -24,7 +24,7 @@ fn input(stdin: io::Stdin) -> String {
 // Save loop
 pub async fn save_loop(data: &Data) {
     loop {
-        sleep(Duration::from_secs(5)).await;
+        sleep(Duration::from_secs(300)).await;
         
         if let Ok(ser) = serde_json::to_string(data) {
             write_fs("state.json", ser).unwrap();
@@ -74,6 +74,7 @@ async fn main() {
                                 *ready = true;
                             }
 
+                            println!("ACTIVATED");
                             save_loop(&data).await;
                         },
                         _ => {}
