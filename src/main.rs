@@ -1,30 +1,38 @@
-use std::collections::HashMap;
 use std::fs::{read_to_string as read_fs, write as write_fs};
 use std::io;
 use std::sync::Mutex;
 
 use poise::serenity_prelude as serenity;
-use tokio;
+use tokio::time::{Duration, sleep};
 
 mod commands;
 mod handler;
 mod types;
 
-use types::arc::Campaign;
-
-pub struct Data {
-    pub campaigns: Mutex<HashMap<String, Campaign>>,
-}
+use types::data::Data;
 
 pub type Error = Box<dyn std::error::Error + Send + Sync>;
 pub type Context<'a> = poise::Context<'a, Data, Error>;
 
+// Function to handle stdin
 fn input(stdin: io::Stdin) -> String {
     let mut buf = String::new();
     stdin.read_line(&mut buf).unwrap();
     buf
 }
 
+// Save loop
+pub async fn save_loop(data: &Data) {
+    loop {
+        sleep(Duration::from_secs(5)).await;
+        
+        if let Ok(ser) = serde_json::to_string(data) {
+            write_fs("state.json", ser).unwrap();
+        }
+    }
+}
+
+// Main loop
 #[tokio::main]
 async fn main() {
     // Set up stdin
@@ -46,26 +54,51 @@ async fn main() {
         .options(poise::FrameworkOptions {
             commands: vec![
                 commands::party::partyjoin(),
+                commands::party::partylist(),
                 commands::party::partynew(),
+                commands::party::partypoll(),
                 commands::random::flip(),
                 commands::random::roll(),
                 commands::random::shoot(),
+                commands::util::github(),
                 commands::util::ping(),
+                commands::util::shutdown(),
             ],
+            event_handler: |_, ev, _, data| {
+                Box::pin(async move {
+                    match ev {
+                        serenity::FullEvent::Ready {data_about_bot: _} => 'ready: {
+                            {
+                                let mut ready = data.ready.lock().unwrap();
+                                if *ready {break 'ready ();}
+                                *ready = true;
+                            }
+
+                            save_loop(&data).await;
+                        },
+                        _ => {}
+                    }
+
+                    Ok(())
+                })
+            },
             ..Default::default()
         })
         .setup(|ctx, _, fwk| {
             Box::pin(async move {
                 poise::builtins::register_in_guild(ctx, &fwk.options().commands, serenity::GuildId::new(1241868193014743070)).await?;
-                Ok(Data {
-                    campaigns: Mutex::new(HashMap::new()),
-                })
+                
+                let mut data = serde_json::from_str::<Data>(&read_fs("state.json").unwrap()).unwrap();
+                data.ready = Mutex::new(false);
+                Ok(data)
             })
         })
         .build();
 
     // Create client
-    let client = serenity::ClientBuilder::new(token, serenity::GatewayIntents::default() | serenity::GatewayIntents::MESSAGE_CONTENT)
+    let client = serenity::ClientBuilder::new(token, serenity::GatewayIntents::default()
+            | serenity::GatewayIntents::GUILD_MESSAGE_POLLS
+            | serenity::GatewayIntents::MESSAGE_CONTENT)
         .framework(framework)
         .event_handler(handler::Handler)
         .await;

@@ -1,3 +1,6 @@
+use serde::{Serialize, Deserialize};
+
+#[derive(Serialize, Deserialize)]
 pub struct Campaign {
     members: Vec<u64>,
 }
@@ -26,11 +29,19 @@ impl Campaign {
         false
     }
 
-    pub fn ping_all(&self) -> String {
+    pub fn ping_list(&self, glue: &str) -> String {
         (&self.members)
             .into_iter()
             .map(|m| format!("<@{}>", m))
             .collect::<Vec<String>>()
-            .join("")
+            .join(glue)
+    }
+
+    pub fn ping_all(&self) -> String {
+        self.ping_list("")
+    }
+
+    pub fn owner(&self) -> u64 {
+        self.members[0]
     }
 }

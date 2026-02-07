@@ -2,11 +2,13 @@ use poise::serenity_prelude as serenity;
 use rand::Rng;
 use regex::Regex;
 
+use serenity::Context;
+
 pub struct Handler;
 
 #[serenity::async_trait]
 impl serenity::EventHandler for Handler {
-    async fn message(&self, ctx: serenity::Context, msg: serenity::Message) {
+    async fn message(&self, ctx: Context, msg: serenity::Message) {
         if !msg.content.starts_with(".") { return; }
 
         let re: Regex = Regex::new(r"\.((\d+)\/)?(\d+)?d(\d+)([-\+]\d+)?([AD])?").unwrap();
