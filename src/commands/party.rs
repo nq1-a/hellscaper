@@ -11,11 +11,19 @@ use poise::serenity_prelude::{
 use crate::{Context, Error};
 use crate::types::arc::Campaign;
 
+#[poise::command(slash_command, subcommands(
+    "new",
+    "join",
+    "list",
+    "poll",
+))]
+pub async fn party(_ctx: Context<'_>) -> Result<(), Error> {Ok(())}
+
 #[poise::command(
     slash_command,
     description_localized("en-US", "Create a new party")
 )]
-pub async fn partynew(
+async fn new(
     ctx: Context<'_>,
     name: String,
 ) -> Result<(), Error> {
@@ -35,7 +43,7 @@ pub async fn partynew(
     slash_command,
     description_localized("en-US", "Join an existing party")
 )]
-pub async fn partyjoin(
+async fn join(
     ctx: Context<'_>,
     name: String,
 ) -> Result<(), Error> {
@@ -58,7 +66,7 @@ pub async fn partyjoin(
     slash_command,
     description_localized("en-US", "List existing parties")
 )]
-pub async fn partylist(ctx: Context<'_>) -> Result<(), Error> {
+async fn list(ctx: Context<'_>) -> Result<(), Error> {
     let mut list: String = String::new();
 
     {
@@ -89,7 +97,7 @@ pub async fn partylist(ctx: Context<'_>) -> Result<(), Error> {
     slash_command,
     description_localized("en-US", "Pings & polls an entire party for readiness")
 )]
-pub async fn partypoll(
+async fn poll(
     ctx: Context<'_>,
     name: String,
 ) -> Result<(), Error> {

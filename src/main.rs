@@ -53,10 +53,7 @@ async fn main() {
     let framework = poise::Framework::<Data, Error>::builder()
         .options(poise::FrameworkOptions {
             commands: vec![
-                commands::party::partyjoin(),
-                commands::party::partylist(),
-                commands::party::partynew(),
-                commands::party::partypoll(),
+                commands::party::party(),
                 commands::random::flip(),
                 commands::random::roll(),
                 commands::random::shoot(),
