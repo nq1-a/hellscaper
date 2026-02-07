@@ -2,7 +2,6 @@ use std::fs::{read_to_string as read_fs, write as write_fs};
 use std::io;
 use std::sync::Mutex;
 
-use config::Config;
 use poise::serenity_prelude as serenity;
 use tokio::time::{Duration, sleep};
 
