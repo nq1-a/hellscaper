@@ -1,4 +1,5 @@
 use crate::{Context, Error};
+use rand::Rng;
 
 #[poise::command(
     slash_command,
@@ -30,7 +31,20 @@ pub async fn ping(ctx: Context<'_>) -> Result<(), Error> {
     description_localized("en-US", "Shuts the bot down")
 )]
 pub async fn shutdown(ctx: Context<'_>) -> Result<(), Error> {
-    ctx.say("Au revoir").await?;
+    let picked: &str;
+    let splash: Vec<&str> = vec![
+        "AU REVOIR",
+        "ARRIVEDERCI",
+        "FAREWELL",
+        "SAYONARA",
+    ];
+
+    {
+        let mut rng = rand::thread_rng();
+        picked = splash[rng.gen_range(0..splash.len())];
+    }
+
+    ctx.say(picked).await?;
     ctx.framework().shard_manager.shutdown_all().await;
     Ok(())
 }
