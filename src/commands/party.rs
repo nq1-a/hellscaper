@@ -34,8 +34,7 @@ async fn new(
         Campaign::new(author)
     );
 
-    // TODO Make this actually ping campaign events
-    ctx.say(format!("<@1459061785909788855>\n# NEW CAMPAIGN\n**HOST:** <@{}>\n\nJOIN BY TYPING `/partyjoin {}`", author, &name)).await?;
+    ctx.say(format!("<@&1459061785909788855>\n# NEW CAMPAIGN\n**HOST:** <@{}>\n\nJOIN BY TYPING `/partyjoin {}`", author, &name)).await?;
     Ok(())
 }
 
@@ -140,7 +139,6 @@ async fn poll(
         CreateMessage::new()
             .content(mentions)
             .poll(poll)
-            .allowed_mentions(CreateAllowedMentions::new().empty_users())
     ).await?;
 
     // Reply & return
