@@ -3,18 +3,22 @@ use std::fs::{
     read_to_string as read_fs,
     write as write_fs,
 };
+use std::path::Path;
 
 use poise::CreateReply;
 use poise::serenity_prelude::{
+    CreateAttachment,
     builder::GetMessages,
     model::id::{ChannelId, MessageId},
 };
+use tokio::fs::read as read_async;
 
 use crate::{Context, Error};
 
 #[poise::command(slash_command, subcommands(
     "save",
     "list",
+    "get",
 ))]
 pub async fn archive(_ctx: Context<'_>) -> Result<(), Error> {Ok(())}
 
@@ -103,5 +107,37 @@ async fn list(ctx: Context<'_>) -> Result<(), Error> {
 
     // Display list
     anchor.edit(ctx, CreateReply::default().content(list)).await?;
+    Ok(())
+}
+
+#[poise::command(
+    slash_command,
+    description_localized("en-US", "Get archive entry by ID")
+)]
+async fn get(
+    ctx: Context<'_>,
+    id: String,
+) -> Result<(), Error> {
+    let anchor = ctx.say("LOADING...").await?;
+
+    // Check that ID is in a valid format
+    if let Err(_) = id.parse::<u64>() {
+        anchor.edit(ctx, CreateReply::default().content("INVALID ENTRY")).await?;
+        return Ok(());
+    }
+
+    // Load file data into attachment
+    let path = format!("archive/{}.md", id);
+    let attachment = CreateAttachment::bytes(
+        read_async(Path::new(&path)).await.unwrap(),
+        path
+    );
+
+    // Send attachment
+    ctx.send(CreateReply::default()
+        .content("ENTRY LOADED")
+        .attachment(attachment)
+    ).await?;
+
     Ok(())
 }
