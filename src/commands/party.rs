@@ -34,7 +34,11 @@ async fn new(
         Campaign::new(author)
     );
 
-    ctx.say(format!("<@&1459061785909788855>\n# NEW CAMPAIGN\n**HOST:** <@{}>\n\nJOIN BY TYPING `/partyjoin {}`", author, &name)).await?;
+    ctx.say(format!("<@&{}>\n# NEW CAMPAIGN\n**HOST:** <@{}>\n\nJOIN BY TYPING `/party join {}`",
+        ctx.data().config.get("campaign_role").unwrap(),
+        author,
+        &name)
+    ).await?;
     Ok(())
 }
 

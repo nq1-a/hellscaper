@@ -6,7 +6,7 @@ use rand::Rng;
     description_localized("en-US", "Returns the bot's GitHub page")
 )]
 pub async fn github(ctx: Context<'_>) -> Result<(), Error> {
-    ctx.say("https://github.com/nq1-a/hellscaper").await?;
+    ctx.say(ctx.data().config.get("github").unwrap()).await?;
     Ok(())
 }
 

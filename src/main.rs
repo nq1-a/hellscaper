@@ -1,4 +1,8 @@
-use std::fs::{read_to_string as read_fs, write as write_fs};
+use std::fs::{
+    create_dir_all as create_path,
+    read_to_string as read_fs,
+    write as write_fs
+};
 use std::io;
 use std::sync::Mutex;
 
@@ -21,6 +25,16 @@ fn input(stdin: io::Stdin) -> String {
     buf
 }
 
+// Create directory if it does not exist
+fn make_dir(path: &str) {
+    if let Err(e) = create_path(path) {
+        match e.kind() {
+            io::ErrorKind::AlreadyExists => {},
+            _ => panic!("{:?}", e)
+        }
+    }
+}
+
 // Save loop
 pub async fn save_loop(data: &Data) {
     loop {
@@ -37,6 +51,9 @@ pub async fn save_loop(data: &Data) {
 async fn main() {
     // Set up stdin
     let stdin = io::stdin();
+
+    // Create directories if they do not exist
+    make_dir("archive");
 
     // Get token
     let token: String;
@@ -92,6 +109,7 @@ async fn main() {
                 ).unwrap_or_default();
 
                 data.ready = Mutex::new(false);
+                data.load_cfg("config.toml");
                 Ok(data)
             })
         })
