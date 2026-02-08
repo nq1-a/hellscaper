@@ -102,7 +102,6 @@ async fn main() {
         })
         .setup(|ctx, _, fwk| {
             Box::pin(async move {
-                poise::builtins::register_in_guild(ctx, &fwk.options().commands, serenity::GuildId::new(1241868193014743070)).await?;
                 
                 let mut data: Data = serde_json::from_str::<Data>(
                     &read_fs("state.json").unwrap_or_default()
@@ -110,6 +109,16 @@ async fn main() {
 
                 data.ready = Mutex::new(false);
                 data.load_cfg("config.toml");
+                
+                poise::builtins::register_in_guild(
+                    ctx,
+                    &fwk.options().commands,
+                    serenity::GuildId::new(data.config.get("guild_id")
+                        .unwrap()
+                        .parse::<u64>()
+                        .unwrap())
+                ).await?;
+
                 Ok(data)
             })
         })
