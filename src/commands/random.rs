@@ -46,7 +46,6 @@ pub async fn shoot(
     for c in flags.chars() {
         bar += match c {
             'A' => {ad += 1; 0},
-            'h' => {ad += 1; 0},
             'B' => {ad -= 1; 0},
             'D' => {ad -= 1; 0},
             'e' => -4,
