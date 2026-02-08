@@ -17,7 +17,8 @@ pub async fn archive(_ctx: Context<'_>) -> Result<(), Error> {Ok(())}
     description_localized("en-US", "Create a new party")
 )]
 async fn save(
-    ctx: Context<'_>
+    ctx: Context<'_>,
+    desc: String,
 ) -> Result<(), Error> {
     let anchor = ctx.say("SAVING TO FILE...").await;
 
@@ -53,14 +54,14 @@ async fn save(
     }
 
     // Write to file
-    let channel_name: String = channel.get().to_string();
+    let channel_id: u64 = channel.get();
 
     let _ = write_fs(
-        format!("archive/{}.md", channel_name),
-        log
+        format!("archive/{}.md", channel_id),
+        format!("#description {}\n\n{}", desc, log)
     ).unwrap();
 
-    ctx.say(format!("SAVED TO ENTRY {}", channel_name)).await?;
+    ctx.say(format!("SAVED TO ENTRY {}\n-# description: {}", channel_id, desc)).await?;
 
     Ok(())
 }
