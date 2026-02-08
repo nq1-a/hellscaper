@@ -18,15 +18,12 @@ impl Campaign {
         }
     }
 
-    pub fn remove(&mut self, member: u64) -> bool {
+    pub fn remove(&mut self, member: u64) {
         for i in 1..self.members.len() {
             if self.members[i] == member {
                 self.members.remove(i);
-                return true;
             }
         }
-
-        false
     }
 
     pub fn ping_list(&self, glue: &str) -> String {

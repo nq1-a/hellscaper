@@ -14,6 +14,8 @@ use crate::types::arc::Campaign;
 #[poise::command(slash_command, subcommands(
     "new",
     "join",
+    "leave",
+    "delete",
     "list",
     "poll",
 ))]
@@ -21,7 +23,7 @@ pub async fn party(_ctx: Context<'_>) -> Result<(), Error> {Ok(())}
 
 #[poise::command(
     slash_command,
-    description_localized("en-US", "Create a new party")
+    description_localized("en-US", "Create a new campaign")
 )]
 async fn new(
     ctx: Context<'_>,
@@ -44,7 +46,7 @@ async fn new(
 
 #[poise::command(
     slash_command,
-    description_localized("en-US", "Join an existing party")
+    description_localized("en-US", "Join an existing campaign")
 )]
 async fn join(
     ctx: Context<'_>,
@@ -61,13 +63,36 @@ async fn join(
         }
     }
 
-    ctx.say(if success {"SUCCESS"} else {"CAMPAIGN NOT FOUND"}).await?;
+    ctx.say(if success {"JOIN SUCCESS"} else {"CAMPAIGN NOT FOUND"}).await?;
     Ok(())
 }
 
 #[poise::command(
     slash_command,
-    description_localized("en-US", "List existing parties")
+    description_localized("en-US", "Leave an existing campaign")
+)]
+async fn leave(
+    ctx: Context<'_>,
+    name: String,
+) -> Result<(), Error> {
+    let mut success: bool = false;
+
+    {
+        let mut campaigns = ctx.data().campaigns.lock().unwrap();
+        
+        if let Some(c) = campaigns.get_mut(&name) {
+            c.remove(ctx.author().id.get());
+            success = true;
+        }
+    }
+
+    ctx.say(if success {"LEAVE SUCCESS"} else {"CAMPAIGN NOT FOUND"}).await?;
+    Ok(())
+}
+
+#[poise::command(
+    slash_command,
+    description_localized("en-US", "List existing campaigns")
 )]
 async fn list(ctx: Context<'_>) -> Result<(), Error> {
     let mut list: String = String::new();
@@ -151,5 +176,40 @@ async fn poll(
         .ephemeral(true)
     ).await?;
 
+    Ok(())
+}
+
+#[poise::command(
+    slash_command,
+    description_localized("en-US", "Delete a campaign")
+)]
+async fn delete(
+    ctx: Context<'_>,
+    name: String,
+) -> Result<(), Error> {
+    // Check for party ownership
+    let owner: u64;
+
+    {
+        let campaigns = ctx.data().campaigns.lock().unwrap();
+        let c = campaigns.get(&name).unwrap();
+        owner = c.owner();
+    }
+
+    if owner != ctx.author().id.get() {
+        ctx.send(CreateReply::default()
+            .content("ERROR: YOU ARE NOT THE HOST")
+            .ephemeral(true)
+        ).await?;
+
+        return Ok(());
+    }
+
+    // Remove party from list
+    {
+        ctx.data().campaigns.lock().unwrap().remove(&name);
+    }
+
+    ctx.say(format!("CAMPAIGN {} SUCCESSFULLY DELETED", name)).await?;
     Ok(())
 }
