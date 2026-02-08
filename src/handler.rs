@@ -1,8 +1,6 @@
-use poise::serenity_prelude as serenity;
+use poise::serenity_prelude::{self as serenity, Context};
 use rand::Rng;
 use regex::Regex;
-
-use serenity::Context;
 
 pub struct Handler;
 

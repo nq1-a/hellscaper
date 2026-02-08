@@ -1,5 +1,10 @@
-use std::fs::write as write_fs;
+use std::fs::{
+    read_dir,
+    read_to_string as read_fs,
+    write as write_fs,
+};
 
+use poise::CreateReply;
 use poise::serenity_prelude::{
     builder::GetMessages,
     model::id::{ChannelId, MessageId},
@@ -9,27 +14,28 @@ use crate::{Context, Error};
 
 #[poise::command(slash_command, subcommands(
     "save",
+    "list",
 ))]
 pub async fn archive(_ctx: Context<'_>) -> Result<(), Error> {Ok(())}
 
 #[poise::command(
     slash_command,
-    description_localized("en-US", "Create a new party")
+    description_localized("en-US", "Write all text data in a channel to an archive entry")
 )]
 async fn save(
     ctx: Context<'_>,
+    name: String,
     desc: String,
 ) -> Result<(), Error> {
-    let anchor = ctx.say("SAVING TO FILE...").await;
+    let anchor = ctx.say("SAVING TO FILE...").await?;
 
     // Get messages
-    let mut current_msg: MessageId = anchor
-        .unwrap()
+    let mut current_msg: MessageId = anchor.clone()
         .into_message().await
         .unwrap().id;
 
     let channel: ChannelId = ctx.channel_id();
-    let mut log: String = "".to_string();
+    let mut log: String = String::new();
     let mut batch: u32 = 1;
 
     loop {
@@ -58,10 +64,44 @@ async fn save(
 
     let _ = write_fs(
         format!("archive/{}.md", channel_id),
-        format!("#description {}\n\n{}", desc, log)
+        format!("{}\n{}\n{}\n\n{}", channel_id, name, desc, log)
     ).unwrap();
 
-    ctx.say(format!("SAVED TO ENTRY {}\n-# description: {}", channel_id, desc)).await?;
+    anchor.edit(ctx, CreateReply::default()
+        .content(format!("SAVED TO ENTRY {}\n-# description: {}", channel_id, desc))
+    ).await?;
 
+    Ok(())
+}
+
+#[poise::command(
+    slash_command,
+    description_localized("en-US", "Lists all archive entries")
+)]
+async fn list(ctx: Context<'_>) -> Result<(), Error> {
+    let anchor = ctx.say("LOADING...").await?;
+
+    // Create list of files
+    let mut list: String = String::new();
+
+    for path in read_dir("archive")? {
+        if let Ok(p) = path {
+            let lines: Vec<String> = read_fs(p.path())
+                .unwrap()
+                .lines()
+                .map(String::from)
+                .collect();
+
+            list = format!("**{}** ({})\n*\"{}\"*\n\n{}",
+                lines[1],
+                lines[0],
+                lines[2],
+                list
+            );
+        }
+    }
+
+    // Display list
+    anchor.edit(ctx, CreateReply::default().content(list)).await?;
     Ok(())
 }
