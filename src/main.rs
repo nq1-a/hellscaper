@@ -110,14 +110,17 @@ async fn main() {
                 data.ready = Mutex::new(false);
                 data.load_cfg("config.toml");
                 
-                poise::builtins::register_in_guild(
-                    ctx,
-                    &fwk.options().commands,
-                    serenity::GuildId::new(data.config.get("guild_id")
-                        .unwrap()
-                        .parse::<u64>()
-                        .unwrap())
-                ).await?;
+                for id in serde_json::from_str::<Vec<String>>(
+                    data.config.get("guild_ids").unwrap()
+                ).unwrap_or_default() {
+                    poise::builtins::register_in_guild(
+                        ctx,
+                        &fwk.options().commands,
+                        serenity::GuildId::new(id
+                            .parse::<u64>()
+                            .unwrap())
+                    ).await?;
+                }
 
                 Ok(data)
             })
