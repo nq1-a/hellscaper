@@ -41,6 +41,7 @@ pub async fn save_loop(data: &Data) {
         sleep(Duration::from_secs(300)).await;
         
         if let Ok(ser) = serde_json::to_string(data) {
+            println!("SAVING...");
             write_fs("state.json", ser).unwrap();
         }
     }
@@ -113,7 +114,7 @@ async fn main() {
                 for id in serde_json::from_str::<Vec<u64>>(
                     data.config.get("guild_ids").unwrap()
                 ).unwrap_or_default() {
-                    println!("{}", id);
+                    println!("{} ONLINE", id);
                     poise::builtins::register_in_guild(
                         ctx,
                         &fwk.options().commands,
