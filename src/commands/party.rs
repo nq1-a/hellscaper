@@ -30,17 +30,32 @@ async fn new(
     name: String,
 ) -> Result<(), Error> {
     let author: u64 = ctx.author().id.get();
+    let valid: bool;
 
-    ctx.data().campaigns.lock().unwrap().insert(
-        name.clone(),
-        Campaign::new(author)
-    );
+    {
+        let mut campaigns = ctx.data().campaigns.lock().unwrap();
+        let name_c = name.clone();
+        valid = campaigns.contains_key(&name_c);
 
-    ctx.say(format!("<@&{}>\n# NEW CAMPAIGN\n**HOST:** <@{}>\n\nJOIN BY TYPING `/party join {}`",
-        ctx.data().config.get("campaign_role").unwrap(),
-        author,
-        &name)
-    ).await?;
+        campaigns.insert(
+            name_c,
+            Campaign::new(author)
+        );
+    }
+
+    if valid {
+        ctx.say(format!("<@&{}>\n# NEW CAMPAIGN\n**HOST:** <@{}>\n\nJOIN BY TYPING `/party join {}`",
+            ctx.data().config.get("campaign_role").unwrap(),
+            author,
+            &name)
+        ).await?;
+    } else {
+        ctx.send(CreateReply::default()
+            .content("A CAMPAIGN WITH THAT NAME ALREADY EXISTS")
+            .ephemeral(true)
+        ).await?;
+    }
+    
     Ok(())
 }
 
@@ -192,13 +207,20 @@ async fn delete(
 
     {
         let campaigns = ctx.data().campaigns.lock().unwrap();
-        let c = campaigns.get(&name).unwrap();
-        owner = c.owner();
+        if let Some(c) = campaigns.get(&name) {owner = c.owner();}
+        else {owner = 0;}
     }
 
-    if owner != ctx.author().id.get() {
+    if owner == 0 {
         ctx.send(CreateReply::default()
-            .content("ERROR: YOU ARE NOT THE HOST")
+            .content("PARTY DOES NOT EXIST")
+            .ephemeral(true)
+        ).await?;
+
+        return Ok(());
+    } else if owner != ctx.author().id.get() {
+        ctx.send(CreateReply::default()
+            .content("YOU ARE NOT THE HOST")
             .ephemeral(true)
         ).await?;
 
