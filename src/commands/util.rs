@@ -28,7 +28,8 @@ pub async fn ping(ctx: Context<'_>) -> Result<(), Error> {
 
 #[poise::command(
     slash_command,
-    description_localized("en-US", "Shuts the bot down")
+    description_localized("en-US", "Shuts the bot down"),
+    required_permissions = "ADMINISTRATOR",
 )]
 pub async fn shutdown(ctx: Context<'_>) -> Result<(), Error> {
     let picked: &str;

@@ -105,6 +105,10 @@ async fn list(ctx: Context<'_>) -> Result<(), Error> {
         }
     }
 
+    if list.len() == 0 {
+        list = String::from("NO ARCHIVES FOUND");
+    }
+
     // Display list
     anchor.edit(ctx, CreateReply::default().content(list)).await?;
     Ok(())
