@@ -5,6 +5,7 @@ use std::fs::{
 };
 use std::io;
 use std::sync::Mutex;
+use std::time::{SystemTime, UNIX_EPOCH};
 
 use poise::serenity_prelude as serenity;
 use tokio::time::{Duration, sleep};
@@ -41,7 +42,12 @@ pub async fn save_loop(data: &Data) {
         sleep(Duration::from_secs(300)).await;
         
         if let Ok(ser) = serde_json::to_string(data) {
-            println!("SAVING...");
+            // Get time
+            let ctime = SystemTime::now();
+            let timestamp = ctime.duration_since(UNIX_EPOCH).unwrap();
+
+            // Show display & save data
+            println!("SAVING... ({:?})", timestamp);
             write_fs("state.json", ser).unwrap();
         }
     }
