@@ -150,13 +150,24 @@ async fn poll(
 
     {
         let campaigns = ctx.data().campaigns.lock().unwrap();
-        let c = campaigns.get(&name).unwrap();
 
-        mentions = c.ping_all();
-        owner = c.owner();
+        if let Some(c) = campaigns.get(&name) {
+            mentions = c.ping_all();
+            owner = c.owner();
+        } else {
+            mentions = String::new();
+            owner = 0;
+        }
     }
 
-    if owner != ctx.author().id.get() {
+    if owner == 0 {
+        ctx.send(CreateReply::default()
+            .content("ERROR: PARTY DOES NOT EXIST")
+            .ephemeral(true)
+        ).await?;
+
+        return Ok(());
+    } else if owner != ctx.author().id.get() {
         ctx.send(CreateReply::default()
             .content("ERROR: YOU ARE NOT THE HOST")
             .ephemeral(true)
