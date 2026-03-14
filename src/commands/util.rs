@@ -1,5 +1,11 @@
-use crate::{Context, Error};
 use rand::Rng;
+
+use poise::CreateReply;
+use poise::serenity_prelude::{
+    model::id::ChannelId,
+};
+
+use crate::{Context, Error};
 
 #[poise::command(
     slash_command,
@@ -28,8 +34,26 @@ pub async fn ping(ctx: Context<'_>) -> Result<(), Error> {
 
 #[poise::command(
     slash_command,
+    description_localized("en-US", "Speak through the bot (raw)"),
+    owners_only
+)]
+pub async fn sayraw(ctx: Context<'_>, text: String) -> Result<(), Error> {
+    let channel: ChannelId = ctx.channel_id();
+
+    ctx.send(CreateReply::default()
+        .content("ON IT")
+        .ephemeral(true)
+    ).await?;
+
+    channel.say(&ctx.http(), text).await?;
+
+    Ok(())
+}
+
+#[poise::command(
+    slash_command,
     description_localized("en-US", "Shuts the bot down"),
-    required_permissions = "ADMINISTRATOR",
+    required_permissions = "ADMINISTRATOR"
 )]
 pub async fn shutdown(ctx: Context<'_>) -> Result<(), Error> {
     let picked: &str;

@@ -1,3 +1,4 @@
+use std::collections::HashSet;
 use std::fs::{
     create_dir_all as create_path,
     read_to_string as read_fs,
@@ -73,6 +74,10 @@ async fn main() {
         write_fs("token.txt", &token).unwrap();
     }
 
+    // Create owner set
+    let mut owners = HashSet::new();
+    owners.insert(serenity::UserId::new(688129525166505999));
+
     // Create framework
     let framework = poise::Framework::<Data, Error>::builder()
         .options(poise::FrameworkOptions {
@@ -84,6 +89,7 @@ async fn main() {
                 commands::random::shoot(),
                 commands::util::github(),
                 commands::util::ping(),
+                commands::util::sayraw(),
                 commands::util::shutdown(),
             ],
             event_handler: |_, ev, _, data| {
@@ -105,6 +111,7 @@ async fn main() {
                     Ok(())
                 })
             },
+            owners: owners,
             ..Default::default()
         })
         .setup(|ctx, _, fwk| {
