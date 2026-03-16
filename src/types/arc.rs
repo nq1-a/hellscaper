@@ -26,6 +26,16 @@ impl Campaign {
         }
     }
 
+    pub fn includes(&self, member: u64) -> bool {
+        for i in 1..self.members.len() {
+            if self.members[i] == member {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     pub fn ping_list(&self, glue: &str) -> String {
         (&self.members)
             .into_iter()

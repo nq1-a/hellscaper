@@ -18,6 +18,7 @@ use crate::types::arc::Campaign;
     "delete",
     "list",
     "poll",
+    "ping",
 ))]
 pub async fn party(_ctx: Context<'_>) -> Result<(), Error> {Ok(())}
 
@@ -202,6 +203,44 @@ async fn poll(
         .ephemeral(true)
     ).await?;
 
+    Ok(())
+}
+
+#[poise::command(
+    slash_command,
+    description_localized("en-US", "Pings a party")
+)]
+async fn ping(
+    ctx: Context<'_>,
+    name: String,
+) -> Result<(), Error> {
+    // Get campaign data
+    let mentions: String;
+    let in_party: bool;
+
+    {
+        let campaigns = ctx.data().campaigns.lock().unwrap();
+
+        if let Some(c) = campaigns.get(&name) {
+            mentions = c.ping_all();
+            in_party = c.includes(ctx.author().id.get());
+        } else {
+            mentions = String::new();
+            in_party = false;
+        }
+    }
+
+    if !in_party {
+        ctx.send(CreateReply::default()
+            .content("ERROR: YOU ARE NOT IN THAT PARTY")
+            .ephemeral(true)
+        ).await?;
+
+        return Ok(());
+    }
+
+    // Reply & return
+    ctx.say(mentions).await?;
     Ok(())
 }
 
