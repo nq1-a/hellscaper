@@ -27,7 +27,7 @@ impl Campaign {
     }
 
     pub fn includes(&self, member: u64) -> bool {
-        for i in 1..self.members.len() {
+        for i in 0..self.members.len() {
             if self.members[i] == member {
                 return true;
             }

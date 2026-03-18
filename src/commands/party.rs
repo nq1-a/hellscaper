@@ -72,9 +72,13 @@ async fn join(
 
     {
         let mut campaigns = ctx.data().campaigns.lock().unwrap();
+        let author = ctx.author().id.get();
         
         if let Some(c) = campaigns.get_mut(&name) {
-            c.add(ctx.author().id.get());
+            if !c.includes(author) {
+                c.add(author);
+            }
+
             success = true;
         }
     }
