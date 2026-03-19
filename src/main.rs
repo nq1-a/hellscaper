@@ -125,7 +125,10 @@ async fn main() {
                 data.load_cfg("config.toml");
                 
                 for id in serde_json::from_str::<Vec<u64>>(
-                    data.config.get("guild_ids").unwrap()
+                    data.config.get(
+                        if data.config.get("testing").unwrap() == "true" {"guild_ids_testing"}
+                        else {"guild_ids"}
+                    ).unwrap()
                 ).unwrap_or_default() {
                     println!("{} ONLINE", id);
                     poise::builtins::register_in_guild(
