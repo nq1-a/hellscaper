@@ -1,3 +1,7 @@
+use std::fs::{
+    read_to_string as read_fs,
+};
+
 use rand::Rng;
 
 use poise::CreateReply;
@@ -13,6 +17,22 @@ use crate::{Context, Error};
 )]
 pub async fn github(ctx: Context<'_>) -> Result<(), Error> {
     ctx.say(ctx.data().config.get("github").unwrap()).await?;
+    Ok(())
+}
+
+#[poise::command(
+    slash_command,
+    description_localized("en-US", "Show the help page for a command (if one exists)")
+)]
+pub async fn help(ctx: Context<'_>, command: String) -> Result<(), Error> {
+    let command_san: String = command.replace(&['/', '\\'], "");
+
+    if let Ok(t) = read_fs(String::from("help/") + &command_san + &String::from(".md")) {
+        ctx.say(t).await?;
+    } else {
+        ctx.say("NO HELP PAGE FOUND FOR THAT COMMAND").await?;
+    }
+
     Ok(())
 }
 

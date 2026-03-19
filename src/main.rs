@@ -88,6 +88,7 @@ async fn main() {
                 commands::random::roll(),
                 commands::random::shoot(),
                 commands::util::github(),
+                commands::util::help(),
                 commands::util::ping(),
                 commands::util::sayraw(),
                 commands::util::shutdown(),
