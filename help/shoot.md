@@ -8,10 +8,11 @@ Advantage and disadvantage make you roll more times. Under advantage, you take t
 The **o**pen flag should be used on all shots, especially if no other flags are active.
 
 Machine and submachine guns will have the **r** flag automatically applied to them.
+Railguns have +1 jam chance.
 
 Flags:
 - **A**dvantage
-- **r**apid fire (advantage, +3)
+- **r**apid fire (advantage, +2, +4 jam chance)
 - **F**anning (advantage, +4)
 - **b**ehind wall (disadvantage)
 - **B**lind (disadvantage)

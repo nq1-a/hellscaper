@@ -39,6 +39,7 @@ pub async fn shoot(
     #[description = "List of modifiers to your attack"] flags: String,
 ) -> Result<(), Error> {
     let mut ad: i32 = 0;
+    let mut n1_bar: i32 = 0;
 
     // Get bar
     let mut bar: i32 = 11;
@@ -46,7 +47,7 @@ pub async fn shoot(
     for c in flags.chars() {
         bar += match c {
             'A' => {ad += 1; 0},
-            'r' => {ad += 1; 3},
+            'r' => {n1_bar += 4; ad += 1; 2},
             'F' => {ad += 1; 4},
             'b' => {ad -= 1; 0},
             'B' => {ad -= 1; 0},
@@ -68,9 +69,12 @@ pub async fn shoot(
     bar -= weapon.bias();
 
     if weapon.auto() {
+        n1_bar += 4;
         ad += 1;
-        bar += 3;
+        bar += 2;
     }
+
+    if weapon == Weapon::railgun {n1_bar += 1;}
 
     // Get roll
     let rolls: Vec<i32> = (1..(ad.abs() + 2))
@@ -80,7 +84,7 @@ pub async fn shoot(
     let roll: i32 = if ad >= 0 {*rolls.iter().max().unwrap()} else {*rolls.iter().min().unwrap()};
 
     // NAT
-    let nat_min: bool = roll == 1 || (weapon == Weapon::railgun && roll == 2);
+    let nat_min: bool = roll <= 1 + n1_bar;
     let nat: bool = nat_min || roll == 20;
 
     // Build message
