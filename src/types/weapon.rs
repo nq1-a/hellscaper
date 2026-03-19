@@ -36,6 +36,14 @@ pub enum Weapon {
 }
 
 impl Weapon {
+    pub fn auto(&self) -> bool {
+        match self {
+            Self::machine       => true,
+            Self::submachine    => true,
+            _                   => false
+        }
+    }
+
     pub fn jammable(&self) -> bool {
         match self {
             Self::electron_gun  => false,
@@ -55,8 +63,8 @@ impl Weapon {
 impl Bias for Weapon {
     fn bias(&self) -> i32 {
         match self {
-            Self::machine       => -6,
             Self::derringer     => -4,
+            Self::machine       => -3,
             Self::pipe          => -3,
             Self::slingshot     => -2,
             Self::thrown_misc   => -2,
@@ -65,12 +73,12 @@ impl Bias for Weapon {
             Self::zip           => -1,
             Self::revolver      =>  0,
             Self::shotgun       =>  0,
-            Self::submachine    =>  0,
             Self::thrown_blade  =>  0,
-            Self::pistol        =>  1,
             Self::carbine       =>  1,
+            Self::pistol        =>  1,
             Self::railgun       =>  1,
             Self::rifle         =>  1,
+            Self::submachine    =>  1,
             Self::assault       =>  2,
             Self::dmr           =>  2,
             Self::electron_gun  =>  2,

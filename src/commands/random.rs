@@ -67,6 +67,11 @@ pub async fn shoot(
 
     bar -= weapon.bias();
 
+    if weapon.auto() {
+        ad += 1;
+        bar += 3;
+    }
+
     // Get roll
     let rolls: Vec<i32> = (1..(ad.abs() + 2))
         .map(|_| rand::thread_rng().gen_range(1..21))
@@ -92,7 +97,7 @@ pub async fn shoot(
         res += &format!("NAT {}", roll);
     }
 
-    res += &format!("\n-# weapon: {:?}, flags: {}", weapon, flags);
+    res += &format!("\n-# weapon: {:?}, flags: {}", weapon, flags + if weapon.auto() {"r"} else {""});
 
     ctx.say(res).await?;
     Ok(())
