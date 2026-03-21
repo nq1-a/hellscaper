@@ -33,10 +33,11 @@ async fn new(
     let author: u64 = ctx.author().id.get();
     let valid: bool;
 
-    {
+    'get: {
         let mut campaigns = ctx.data().campaigns.lock().unwrap();
         let name_c = name.clone();
         valid = campaigns.contains_key(&name_c);
+        if valid {break 'get;}
 
         campaigns.insert(
             name_c,
@@ -44,7 +45,7 @@ async fn new(
         );
     }
 
-    if valid {
+    if !valid {
         ctx.say(format!("<@&{}>\n# NEW CAMPAIGN\n**HOST:** <@{}>\n\nJOIN BY TYPING `/party join {}`",
             ctx.data().config.get("campaign_role").unwrap(),
             author,
@@ -197,7 +198,7 @@ async fn poll(
     ctx.channel_id().send_message(
         &ctx.http(),
         CreateMessage::new()
-            .content(mentions)
+            .content(format!("# {}\n{}", name, mentions))
             .poll(poll)
     ).await?;
 
