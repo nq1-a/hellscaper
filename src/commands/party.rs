@@ -245,7 +245,7 @@ async fn ping(
     }
 
     // Reply & return
-    ctx.say(mentions).await?;
+    ctx.say(format!("({}) {}", name, mentions)).await?;
     Ok(())
 }
 
