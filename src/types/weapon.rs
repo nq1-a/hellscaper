@@ -64,8 +64,8 @@ impl Bias for Weapon {
         match self {
             Self::derringer     => -4,
             Self::machine       => -3,
-            Self::pipe          => -3,
-            Self::slingshot     => -2,
+            Self::slingshot     => -3,
+            Self::pipe          => -2,
             Self::thrown_misc   => -2,
             Self::musket        => -1,
             Self::spit          => -1,
