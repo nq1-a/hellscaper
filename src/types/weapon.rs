@@ -48,7 +48,6 @@ impl Weapon {
         match self {
             Self::electron_gun  => false,
             Self::laser         => false,
-            Self::pipe          => false,
             Self::server_ban    => false,
             Self::slingshot     => false,
             Self::spit          => false,
