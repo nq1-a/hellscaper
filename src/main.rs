@@ -50,6 +50,7 @@ pub async fn save_loop(data: &Data) {
             // Show display & save data
             println!("SAVING... ({:?})", timestamp);
             write_fs("state.json", ser).unwrap();
+            write_fs("state~.json", ser).unwrap();
         }
     }
 }
