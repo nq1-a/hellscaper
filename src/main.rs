@@ -9,6 +9,7 @@ use std::sync::Mutex;
 use std::time::{SystemTime, UNIX_EPOCH};
 
 use poise::serenity_prelude as serenity;
+use regex::Regex;
 use tokio::time::{Duration, sleep};
 
 mod commands;
@@ -19,8 +20,6 @@ use types::data::Data;
 
 pub type Error = Box<dyn std::error::Error + Send + Sync>;
 pub type Context<'a> = poise::Context<'a, Data, Error>;
-
-const BASE_POINTS: u64 = 2;
 
 // Function to handle stdin
 fn input(stdin: io::Stdin) -> String {
@@ -37,6 +36,12 @@ fn make_dir(path: &str) {
             _ => panic!("{:?}", e)
         }
     }
+}
+
+// Message cleaning
+fn clean_msg(msg: &str) -> String {
+    let re = Regex::new(r"<(@|#|t:)\d+(:.)?>").unwrap();
+    re.replace_all(msg, "@@@@").to_string()
 }
 
 // Save loop
@@ -114,9 +119,11 @@ async fn main() {
                             {
                                 let mut points = data.points.lock().unwrap();
                                 let author = new_message.author.id.get();
+                                let msg_len: u64 = clean_msg(&new_message.content).len() as u64;
+                                let new_pts: u64 = (msg_len / 5u64).max(1);
 
-                                if let Some(p) = points.get_mut(&author) {*p += BASE_POINTS;}
-                                else {points.insert(author, BASE_POINTS);}
+                                if let Some(p) = points.get_mut(&author) {*p += new_pts;}
+                                else {points.insert(author, new_pts);}
                             }
                         },
                         _ => {}
