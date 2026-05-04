@@ -20,6 +20,8 @@ use types::data::Data;
 pub type Error = Box<dyn std::error::Error + Send + Sync>;
 pub type Context<'a> = poise::Context<'a, Data, Error>;
 
+const BASE_POINTS: u64 = 2;
+
 // Function to handle stdin
 fn input(stdin: io::Stdin) -> String {
     let mut buf = String::new();
@@ -40,7 +42,7 @@ fn make_dir(path: &str) {
 // Save loop
 pub async fn save_loop(data: &Data) {
     loop {
-        sleep(Duration::from_secs(300)).await;
+        sleep(Duration::from_secs(30)).await;
         
         if let Ok(ser) = serde_json::to_string(data) {
             // Get time
@@ -84,6 +86,7 @@ async fn main() {
         .options(poise::FrameworkOptions {
             commands: vec![
                 commands::archive::archive(),
+                commands::level::level(),
                 commands::party::party(),
                 commands::random::flip(),
                 commands::random::roll(),
@@ -106,6 +109,15 @@ async fn main() {
 
                             println!("ACTIVATED");
                             save_loop(&data).await;
+                        },
+                        serenity::FullEvent::Message {new_message} => {
+                            {
+                                let mut points = data.points.lock().unwrap();
+                                let author = new_message.author.id.get();
+
+                                if let Some(p) = points.get_mut(&author) {*p += BASE_POINTS;}
+                                else {points.insert(author, BASE_POINTS);}
+                            }
                         },
                         _ => {}
                     }

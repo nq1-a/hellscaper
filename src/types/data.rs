@@ -11,6 +11,7 @@ pub struct Data {
     pub campaigns: Mutex<HashMap<String, Campaign>>,
     pub config: HashMap<String, String>,
     pub ready: Mutex<bool>,
+    pub points: Mutex<HashMap<u64, u64>>,
 }
 
 impl Data {
