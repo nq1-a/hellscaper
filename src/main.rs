@@ -5,6 +5,7 @@ use std::fs::{
     write as write_fs
 };
 use std::io;
+use std::process::exit;
 use std::sync::Mutex;
 use std::time::{SystemTime, UNIX_EPOCH};
 
@@ -77,9 +78,20 @@ async fn main() {
     if let Ok(t) = read_fs("token.txt") {
         token = t;
     } else {
-        print!("No bot token found // You must supply one yourself: ");
+        print!("SUPPLY BOT TOKEN: ");
         token = input(stdin);
         write_fs("token.txt", &token).unwrap();
+    }
+
+    // Make sure config.toml exists
+    if let Err(_) = read_fs("config.toml") {
+        println!("CONFIG FILE NOT FOUND!");
+        println!("CREATING NEW CONFIG FILE...");
+
+        write_fs("config.toml", read_fs("config-default.toml").unwrap()).unwrap();
+
+        println!("FILE CREATED // FILL OUT CONFIG FILE AND RERUN PROGRAM");
+        exit(1);
     }
 
     // Create owner set

@@ -1,6 +1,6 @@
-token.txt
-
 # Ignore all user generated data
+token.txt
+config.toml
 state.json
 state~.json
 archive
