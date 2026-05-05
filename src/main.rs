@@ -42,7 +42,10 @@ fn make_dir(path: &str) {
 // Message cleaning
 fn clean_msg(msg: &str) -> String {
     let re = Regex::new(r"<(@|#|t:)\d+(:.)?>").unwrap();
-    re.replace_all(msg, "@@@@").to_string()
+    let res = re.replace_all(msg, "@@@@");
+
+    let re = Regex::new(r"[^\x{0020}-\x{00FF}]|\s").unwrap();
+    re.replace_all(&res, "").to_string()
 }
 
 // Save loop
@@ -132,7 +135,7 @@ async fn main() {
                                 let mut points = data.points.lock().unwrap();
                                 let author = new_message.author.id.get();
                                 let msg_len: u64 = clean_msg(&new_message.content).len() as u64;
-                                let new_pts: u64 = (msg_len / 5u64).max(1);
+                                let new_pts: u64 = (msg_len / 5u64).max(1).min(20);
 
                                 if let Some(p) = points.get_mut(&author) {*p += new_pts;}
                                 else {points.insert(author, new_pts);}
