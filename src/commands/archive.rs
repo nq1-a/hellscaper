@@ -37,7 +37,7 @@ async fn save(
             .ephemeral(true)
         ).await?;
 
-        Ok(())
+        return Ok(());
     }
 
     let anchor = ctx.say("SAVING TO FILE...").await?;

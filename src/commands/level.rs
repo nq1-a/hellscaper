@@ -68,7 +68,7 @@ async fn leaderboard(ctx: Context<'_>) -> Result<(), Error> {
             .ephemeral(true)
         ).await?;
 
-        Ok(())
+        return Ok(());
     }
 
     // Sort board

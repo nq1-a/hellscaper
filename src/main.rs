@@ -111,6 +111,7 @@ async fn main() {
                 commands::random::flip(),
                 commands::random::roll(),
                 commands::random::shoot(),
+                commands::util::askforethnicpeter(),
                 commands::util::github(),
                 commands::util::help(),
                 commands::util::ping(),

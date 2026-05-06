@@ -93,3 +93,20 @@ pub async fn shutdown(ctx: Context<'_>) -> Result<(), Error> {
     ctx.framework().shard_manager.shutdown_all().await;
     Ok(())
 }
+
+#[poise::command(
+    slash_command,
+    description_localized("en-US", "Ask for ethnic Peter"),
+)]
+pub async fn askforethnicpeter(ctx: Context<'_>) -> Result<(), Error> {
+    let ep: u32;
+
+    {
+        let mut ethnicpeters = ctx.data().ethnicpeters.lock().unwrap();
+        *ethnicpeters += 1;
+        ep = *ethnicpeters;
+    }
+
+    ctx.say(format!("**YOU ASKED FOR ETHNIC PETER**\nTHIS IS ASK #{}", ep)).await?;
+    Ok(())
+}

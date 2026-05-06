@@ -10,6 +10,7 @@ use crate::types::arc::Campaign;
 pub struct Data {
     pub campaigns: Mutex<HashMap<String, Campaign>>,
     pub config: HashMap<String, String>,
+    pub ethnicpeters: Mutex<u32>,
     pub ready: Mutex<bool>,
     pub points: Mutex<HashMap<u64, u64>>,
 }

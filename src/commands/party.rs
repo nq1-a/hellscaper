@@ -36,7 +36,7 @@ async fn new(
             .ephemeral(true)
         ).await?;
 
-        Ok(())
+        return Ok(());
     }
 
     let author: u64 = ctx.author().id.get();
