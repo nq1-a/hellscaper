@@ -30,6 +30,13 @@ async fn new(
     ctx: Context<'_>,
     name: String,
 ) -> Result<(), Error> {
+    if name.chars().count() > 48 {
+        ctx.send(CreateReply::default()
+            .content("NAME IS TOO LONG")
+            .ephemeral(true)
+        ).await?;
+    }
+
     let author: u64 = ctx.author().id.get();
     let valid: bool;
 

@@ -31,6 +31,13 @@ async fn save(
     name: String,
     desc: String,
 ) -> Result<(), Error> {
+    if name.chars().count() > 32 || desc.chars().count() > 48 {
+        ctx.send(CreateReply::default()
+            .content("NAME/DESCRIPTION IS TOO LONG")
+            .ephemeral(true)
+        ).await?;
+    }
+
     let anchor = ctx.say("SAVING TO FILE...").await?;
 
     // Get messages
