@@ -60,11 +60,22 @@ async fn leaderboard(ctx: Context<'_>) -> Result<(), Error> {
             .collect::<Vec<_>>()
             .clone();
     }
+    
+    // Check to see if we actually need to do anything
+    if board.len() == 0 {
+        ctx.send(CreateReply::default()
+            .content("NO DATA!")
+            .ephemeral(true)
+        ).await?;
 
+        Ok(())
+    }
+
+    // Sort board
     board.sort_by(|a, b| b.1.cmp(&a.1));
 
     // Format & send
-    let entries: Vec<String> = board[0..10]
+    let entries: Vec<String> = board[0..10.min(board.len())]
         .iter()
         .map(|s| format!("<@{}>: LEVEL {} ({} POINTS)", s.0, lvl_points(s.1), s.1))
         .collect();

@@ -35,6 +35,8 @@ async fn new(
             .content("NAME IS TOO LONG")
             .ephemeral(true)
         ).await?;
+
+        Ok(())
     }
 
     let author: u64 = ctx.author().id.get();

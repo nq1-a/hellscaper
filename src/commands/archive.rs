@@ -36,6 +36,8 @@ async fn save(
             .content("NAME/DESCRIPTION IS TOO LONG")
             .ephemeral(true)
         ).await?;
+
+        Ok(())
     }
 
     let anchor = ctx.say("SAVING TO FILE...").await?;
