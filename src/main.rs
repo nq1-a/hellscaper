@@ -117,21 +117,35 @@ async fn main() {
                 commands::util::sayraw(),
                 commands::util::shutdown(),
             ],
-            event_handler: |_, ev, _, data| {
+            event_handler: |ctx, ev, _, data| {
                 Box::pin(async move {
                     match ev {
                         serenity::FullEvent::Ready {data_about_bot: _} => 'ready: {
                             {
                                 let mut ready = data.ready.lock().unwrap();
-                                if *ready {break 'ready ();}
+                                if *ready {break 'ready;}
                                 *ready = true;
                             }
 
                             println!("ACTIVATED");
                             save_loop(&data).await;
                         },
-                        serenity::FullEvent::Message {new_message} => {
+                        serenity::FullEvent::Message {new_message} => 'msg: {
                             {
+                                if new_message.author.bot || new_message.author.system {break 'msg;}
+
+                                // Check channel
+                                let channel_desc: String;
+                                
+                                if let Ok(ch) = new_message.channel_id.to_channel(&ctx).await {
+                                    if let Some(gch) = ch.guild() {
+                                        channel_desc = gch.topic.unwrap_or_default();
+                                    } else {break 'msg;}
+                                } else {break 'msg;}
+
+                                if channel_desc.contains("<nopts>") {break 'msg;}
+
+                                // Add points
                                 let mut points = data.points.lock().unwrap();
                                 let author = new_message.author.id.get();
                                 let msg_len: u64 = clean_msg(&new_message.content).len() as u64;

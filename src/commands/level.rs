@@ -49,6 +49,7 @@ async fn view(
     description_localized("en-US", "See everyone's ranked scores")
 )]
 async fn leaderboard(ctx: Context<'_>) -> Result<(), Error> {
+    // Get leaderboard data
     let mut board: Vec<(u64, u64)>;
 
     {
@@ -62,6 +63,7 @@ async fn leaderboard(ctx: Context<'_>) -> Result<(), Error> {
 
     board.sort_by(|a, b| b.1.cmp(&a.1));
 
+    // Format & send
     let entries: Vec<String> = board[0..10]
         .iter()
         .map(|s| format!("<@{}>: LEVEL {} ({} POINTS)", s.0, lvl_points(s.1), s.1))
