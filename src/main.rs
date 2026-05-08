@@ -11,6 +11,10 @@ use std::time::{SystemTime, UNIX_EPOCH};
 
 use poise::serenity_prelude as serenity;
 use regex::Regex;
+use serenity::{
+    ChannelId,
+    GuildChannel
+};
 use tokio::time::{Duration, sleep};
 
 mod commands;
@@ -46,6 +50,15 @@ fn clean_msg(msg: &str) -> String {
 
     let re = Regex::new(r"[^\x{0020}-\x{00FF}]|\s").unwrap();
     re.replace_all(&res, "").to_string()
+}
+
+// Get guild channel
+pub async fn get_gch(ctx: &serenity::Context, id: ChannelId) -> Option<GuildChannel> {
+    if let Ok(ch) = id.to_channel(ctx).await {
+        return ch.guild();
+    }
+
+    None
 }
 
 // Save loop
@@ -137,11 +150,13 @@ async fn main() {
 
                                 // Check channel
                                 let channel_desc: String;
-                                
-                                if let Ok(ch) = new_message.channel_id.to_channel(&ctx).await {
-                                    if let Some(gch) = ch.guild() {
-                                        channel_desc = gch.topic.unwrap_or_default();
-                                    } else {break 'msg;}
+
+                                if let Some(gch) = get_gch(&ctx, new_message.channel_id).await {
+                                    if let Some(pid) = gch.parent_id && let Some(pgch) = get_gch(&ctx, pid).await {
+                                        if pgch.topic.unwrap_or_default().contains("<nopts>") {break 'msg;}
+                                    }
+
+                                    channel_desc = gch.topic.unwrap_or_default();
                                 } else {break 'msg;}
 
                                 if channel_desc.contains("<nopts>") {break 'msg;}
@@ -150,7 +165,12 @@ async fn main() {
                                 let mut points = data.points.lock().unwrap();
                                 let author = new_message.author.id.get();
                                 let msg_len: u64 = clean_msg(&new_message.content).len() as u64;
-                                let new_pts: u64 = (msg_len / 5u64).max(1).min(20);
+                                let mut new_pts: u64 = (msg_len / 5u64).max(1).min(20);
+
+                                let re = Regex::new(r"<(\d+)ptx>").unwrap();
+                                if let Some(caps) = re.captures(&channel_desc) {
+                                    new_pts *= caps[1].parse::<u64>().unwrap();
+                                }
 
                                 if let Some(p) = points.get_mut(&author) {*p += new_pts;}
                                 else {points.insert(author, new_pts);}
