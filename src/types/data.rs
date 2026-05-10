@@ -13,6 +13,7 @@ pub struct Data {
     pub ethnicpeters: Mutex<u32>,
     pub ready: Mutex<bool>,
     pub points: Mutex<HashMap<u64, u64>>,
+    pub vanities: Mutex<HashMap<u64, u64>>,
 }
 
 impl Data {

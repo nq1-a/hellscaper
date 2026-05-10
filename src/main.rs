@@ -161,7 +161,7 @@ async fn main() {
 
                                 if channel_desc.contains("<nopts>") {break 'msg;}
 
-                                // Add points
+                                // Calculate points
                                 let mut points = data.points.lock().unwrap();
                                 let author = new_message.author.id.get();
                                 let msg_len: u64 = clean_msg(&new_message.content).len() as u64;
@@ -172,6 +172,7 @@ async fn main() {
                                     new_pts *= caps[1].parse::<u64>().unwrap();
                                 }
 
+                                // Add points
                                 if let Some(p) = points.get_mut(&author) {*p += new_pts;}
                                 else {points.insert(author, new_pts);}
                             }
