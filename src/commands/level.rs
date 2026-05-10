@@ -117,7 +117,7 @@ async fn vanitynew(
         );
     }
 
-    if valid {
+    if !valid {
         ctx.send(CreateReply::default()
             .content("VANITY ROLE SET")
             .ephemeral(true)
@@ -208,33 +208,78 @@ async fn vanityunequip(
     Ok(())
 }
 
+// #[poise::command(
+//     slash_command,
+//     description_localized("en-US", "List vanity roles")
+// )]
+// async fn vanitylist(ctx: Context<'_>) -> Result<(), Error> {
+//     let mut list: String = String::new();
+//
+//     {
+//         let vanities = ctx.data().vanities.lock().unwrap();
+//
+//         if vanities.len() == 0 {
+//             list = "NO VANITY ROLES CREATED".to_string();
+//         } else {
+//             for (k, v) in vanities.iter() {
+//                 list = format!("{}<@&{}> (Level {})\n",
+//                     list,
+//                     k,
+//                     v
+//                 );
+//             } 
+//         }
+//     }
+//
+//     ctx.send(CreateReply::default()
+//         .content(list)
+//         .allowed_mentions(CreateAllowedMentions::new().empty_users())
+//     ).await?;
+//
+//     Ok(())
+// }
+
 #[poise::command(
     slash_command,
     description_localized("en-US", "List vanity roles")
 )]
 async fn vanitylist(ctx: Context<'_>) -> Result<(), Error> {
-    let mut list: String = String::new();
+    // Get board data
+    let mut board: Vec<(u64, u64)>;
 
     {
         let vanities = ctx.data().vanities.lock().unwrap();
+        board = vanities
+            .iter()
+            .map(|v| (*v.0, *v.1))
+            .collect::<Vec<_>>()
+            .clone();
+    }
+    
+    // Check to see if we actually need to do anything
+    if board.len() == 0 {
+        ctx.send(CreateReply::default()
+            .content("NO VANITY ROLES CREATED")
+            .ephemeral(true)
+        ).await?;
 
-        if vanities.len() == 0 {
-            list = "NO VANITY ROLES CREATED".to_string();
-        } else {
-            for (k, v) in vanities.iter() {
-                list = format!("{}<@&{}> (Level {})\n",
-                    list,
-                    k,
-                    v
-                );
-            } 
-        }
+        return Ok(());
     }
 
+    // Sort board
+    board.sort_by(|a, b| a.1.cmp(&b.1));
+
+    // Format & send
+    let entries: Vec<String> = board
+        .iter()
+        .map(|s| format!("<@&{}> (LEVEL {})\n", s.0, s.1))
+        .collect();
+
     ctx.send(CreateReply::default()
-        .content(list)
+        .content(entries.join("\n"))
         .allowed_mentions(CreateAllowedMentions::new().empty_users())
     ).await?;
 
     Ok(())
 }
+
