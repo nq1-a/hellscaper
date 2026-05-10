@@ -272,7 +272,7 @@ async fn vanitylist(ctx: Context<'_>) -> Result<(), Error> {
     // Format & send
     let entries: Vec<String> = board
         .iter()
-        .map(|s| format!("<@&{}> (LEVEL {})\n", s.0, s.1))
+        .map(|s| format!("<@&{}> (LEVEL {})", s.0, s.1))
         .collect();
 
     ctx.send(CreateReply::default()
