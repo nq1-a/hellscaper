@@ -157,7 +157,8 @@ async fn vanityequip(
             }
         }
 
-        if successes == 2u8 && let Ok(_) = member.add_role(&ctx.http(), role.id).await {
+        if successes == 2u8 {
+            member.add_role(&ctx.http(), role.id).await?;
             successes = 3u8;
         }
     }
@@ -193,7 +194,8 @@ async fn vanityunequip(
             }
         }
 
-        if successes == 1u8 && let Ok(_) = member.remove_role(&ctx.http(), role.id).await {
+        if successes == 1u8 {
+            member.remove_role(&ctx.http(), role.id).await?;
             successes = 2u8;
         }
     }
