@@ -157,7 +157,7 @@ async fn vanityequip(
             }
         }
 
-        if successes == 2 && let Ok(_) = member.add_role(&ctx.http(), role.id).await {
+        if successes == 2u8 && let Ok(_) = member.add_role(&ctx.http(), role.id).await {
             successes = 3u8;
         }
     }
@@ -193,7 +193,7 @@ async fn vanityunequip(
             }
         }
 
-        if successes == 1 && let Ok(_) = member.remove_role(&ctx.http(), role.id).await {
+        if successes == 1u8 && let Ok(_) = member.remove_role(&ctx.http(), role.id).await {
             successes = 2u8;
         }
     }
@@ -207,37 +207,6 @@ async fn vanityunequip(
     ctx.say(messages[successes as usize]).await?;
     Ok(())
 }
-
-// #[poise::command(
-//     slash_command,
-//     description_localized("en-US", "List vanity roles")
-// )]
-// async fn vanitylist(ctx: Context<'_>) -> Result<(), Error> {
-//     let mut list: String = String::new();
-//
-//     {
-//         let vanities = ctx.data().vanities.lock().unwrap();
-//
-//         if vanities.len() == 0 {
-//             list = "NO VANITY ROLES CREATED".to_string();
-//         } else {
-//             for (k, v) in vanities.iter() {
-//                 list = format!("{}<@&{}> (Level {})\n",
-//                     list,
-//                     k,
-//                     v
-//                 );
-//             } 
-//         }
-//     }
-//
-//     ctx.send(CreateReply::default()
-//         .content(list)
-//         .allowed_mentions(CreateAllowedMentions::new().empty_users())
-//     ).await?;
-//
-//     Ok(())
-// }
 
 #[poise::command(
     slash_command,
