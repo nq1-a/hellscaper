@@ -48,7 +48,8 @@ fn clean_msg(msg: &str) -> String {
     let re = Regex::new(r"<(@|#|t:)\d+(:.)?>").unwrap();
     let res = re.replace_all(msg, "@@@@");
 
-    let re = Regex::new(r"[^\x{0020}-\x{00FF}]|\s").unwrap();
+    // god help us all
+    let re = Regex::new(r"[^\x{0020}-\x{02AF}\x{0370}-\x{070D}\x{0710}-\x{08E1}\x{08E3}-\x{115E}\x{1161}-\x{17FF}\x{1C80}-\x{1FFF}\x{2070}-\x{2DDE}\x{2E00}-\x{D7FB}\x{F900}-\x{FDFD}\x{FE30}-\x{FF9F}\x{FFA1}-\x{FFEE}]|\x{00AD}|\s|\p{M}").unwrap();
     re.replace_all(&res, "").to_string()
 }
 

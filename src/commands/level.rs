@@ -203,7 +203,7 @@ async fn vanityunequip(
     let messages: Vec<&str> = vec![
         "ROLE IS NOT A VANITY ROLE",
         "COULD NOT UNEQUIP ROLE (DO YOU EVEN HAVE IT ON?)",
-        "EQUIP SUCCESS",
+        "UNEQUIP SUCCESS",
     ];
 
     ctx.say(messages[successes as usize]).await?;
