@@ -151,7 +151,7 @@ async fn vanityequip(
 
             if let Some(l) = vanities.get(&role_id) {
                 successes += 1u8;
-                if lvl_points(*points.get(&author_id).unwrap_or(&0)) > *l {
+                if lvl_points(*points.get(&author_id).unwrap_or(&0)) >= *l {
                     successes += 1u8;
                 }
             }
