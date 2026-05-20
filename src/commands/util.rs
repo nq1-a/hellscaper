@@ -10,6 +10,7 @@ use poise::serenity_prelude::{
 };
 
 use crate::{Context, Error};
+use crate::types::gif::Gif;
 
 #[poise::command(
     slash_command,
@@ -108,5 +109,17 @@ pub async fn askforethnicpeter(ctx: Context<'_>) -> Result<(), Error> {
     }
 
     ctx.say(format!("**YOU ASKED FOR ETHNIC PETER**\nTHIS IS ASK #{}", ep)).await?;
+    Ok(())
+}
+
+#[poise::command(
+    slash_command,
+    description_localized("en-US", "Show one of those godforsaken GIFs"),
+)]
+pub async fn gif(
+    ctx: Context<'_>,
+    #[description = "The GIF you want to use"] gif: Gif,
+) -> Result<(), Error> {
+    ctx.say(gif.link()).await?;
     Ok(())
 }
