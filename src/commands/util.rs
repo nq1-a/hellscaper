@@ -70,7 +70,8 @@ pub async fn sayraw(ctx: Context<'_>, text: String) -> Result<(), Error> {
         lvl = lvl_points(*points.get(&author_id).unwrap_or(&0));
     }
 
-    if lvl >= 35 {
+    // TODO: Make this configurable
+    if lvl >= 30 {
         ctx.send(CreateReply::default()
             .content("ON IT")
             .ephemeral(true)
@@ -79,7 +80,7 @@ pub async fn sayraw(ctx: Context<'_>, text: String) -> Result<(), Error> {
         channel.say(&ctx.http(), text).await?;
     } else {
         ctx.send(CreateReply::default()
-            .content("MUST BE AT LEAST LEVEL 35")
+            .content("MUST BE AT LEAST LEVEL 30 TO USE SAYRAW")
             .ephemeral(true)
         ).await?;
     }
