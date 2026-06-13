@@ -26,8 +26,10 @@ pub async fn github(ctx: Context<'_>) -> Result<(), Error> {
     slash_command,
     description_localized("en-US", "Show the help page for a command (if one exists)")
 )]
-pub async fn help(ctx: Context<'_>, command: String) -> Result<(), Error> {
-    let command_san: String = command.replace(&['/', '\\'], "");
+pub async fn help(ctx: Context<'_>, command: Option<String>) -> Result<(), Error> {
+    let command_san: String = command
+        .unwrap_or("help".to_string())
+        .replace(&['/', '\\'], "");
 
     if let Ok(t) = read_fs(String::from("help/") + &command_san + &String::from(".md")) {
         ctx.say(t).await?;
