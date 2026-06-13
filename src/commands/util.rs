@@ -10,6 +10,7 @@ use poise::serenity_prelude::{
 };
 
 use crate::{Context, Error};
+use crate::commands::level::lvl_points;
 use crate::types::gif::Gif;
 
 #[poise::command(
@@ -55,18 +56,31 @@ pub async fn ping(ctx: Context<'_>) -> Result<(), Error> {
 
 #[poise::command(
     slash_command,
-    description_localized("en-US", "Speak through the bot (raw)"),
-    owners_only
+    description_localized("en-US", "Speak through the bot (raw)")
 )]
 pub async fn sayraw(ctx: Context<'_>, text: String) -> Result<(), Error> {
+    let author_id: u64 = ctx.author().id.get();
     let channel: ChannelId = ctx.channel_id();
+    let lvl: u64;
 
-    ctx.send(CreateReply::default()
-        .content("ON IT")
-        .ephemeral(true)
-    ).await?;
+    {
+        let points = ctx.data().points.lock().unwrap();
+        lvl = lvl_points(*points.get(&author_id).unwrap_or(&0));
+    }
 
-    channel.say(&ctx.http(), text).await?;
+    if lvl >= 35 {
+        ctx.send(CreateReply::default()
+            .content("ON IT")
+            .ephemeral(true)
+        ).await?;
+
+        channel.say(&ctx.http(), text).await?;
+    } else {
+        ctx.send(CreateReply::default()
+            .content("MUST BE AT LEAST LEVEL 35")
+            .ephemeral(true)
+        ).await?;
+    }
 
     Ok(())
 }
@@ -74,7 +88,7 @@ pub async fn sayraw(ctx: Context<'_>, text: String) -> Result<(), Error> {
 #[poise::command(
     slash_command,
     description_localized("en-US", "Shuts the bot down"),
-    required_permissions = "ADMINISTRATOR"
+    owners_only
 )]
 pub async fn shutdown(ctx: Context<'_>) -> Result<(), Error> {
     let picked: &str;
