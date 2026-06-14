@@ -22,6 +22,7 @@ impl Campaign {
         for i in 1..self.members.len() {
             if self.members[i] == member {
                 self.members.remove(i);
+                return;
             }
         }
     }
