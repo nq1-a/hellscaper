@@ -12,6 +12,7 @@ pub struct Data {
     pub config: HashMap<String, String>,
     pub ethnicpeters: Mutex<u32>,
     pub points: Mutex<HashMap<u64, u64>>,
+    pub quicktime: Mutex<HashMap<String, Vec<u64>>>,
     pub ready: Mutex<bool>,
     pub vanities: Mutex<HashMap<u64, u64>>,
 }

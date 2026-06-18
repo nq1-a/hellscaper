@@ -122,6 +122,7 @@ async fn main() {
                 commands::archive::archive(),
                 commands::level::level(),
                 commands::party::party(),
+                commands::quicktime::quicktime(),
                 commands::random::flip(),
                 commands::random::roll(),
                 commands::random::shoot(),
@@ -149,6 +150,7 @@ async fn main() {
                         serenity::FullEvent::Message {new_message} => 'msg: {
                             {
                                 if new_message.author.bot || new_message.author.system {break 'msg;}
+                                let author: u64 = new_message.author.id.get();
 
                                 // Check channel
                                 let channel_desc: String;
@@ -165,7 +167,6 @@ async fn main() {
 
                                 // Calculate points
                                 let mut points = data.points.lock().unwrap();
-                                let author = new_message.author.id.get();
                                 let msg_len: u64 = clean_msg(&new_message.content).len() as u64;
                                 let mut new_pts: u64 = (msg_len / 5u64).max(1).min(20);
 
@@ -177,6 +178,15 @@ async fn main() {
                                 // Add points
                                 if let Some(p) = points.get_mut(&author) {*p += new_pts;}
                                 else {points.insert(author, new_pts);}
+
+                                // Update quicktime messages
+                                let mut qt = data.quicktime.lock().unwrap();
+                                
+                                for (s, v) in qt.iter_mut() {
+                                    if new_message.content.to_lowercase() == s.split(":").last().unwrap() {
+                                        v.push(author);
+                                    }
+                                }
                             }
                         },
                         _ => {}
@@ -196,6 +206,7 @@ async fn main() {
                 ).unwrap_or_default();
 
                 data.ready = Mutex::new(false);
+                data.quicktime = Default::default();
                 data.load_cfg("config.toml");
                 
                 for id in serde_json::from_str::<Vec<u64>>(
