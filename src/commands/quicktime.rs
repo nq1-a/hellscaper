@@ -17,7 +17,7 @@ async fn new(
     #[description = "What the player must say (case-insensitive)"]
     answer: String,
     #[description = "How long the player gets to answer (in seconds)"]
-    time: u32,
+    time: u8,
 ) -> Result<(), Error> {
     let anchor = ctx
         .say(&prompt).await?
