@@ -152,36 +152,39 @@ async fn main() {
                                 if new_message.author.bot || new_message.author.system {break 'msg;}
                                 let author: u64 = new_message.author.id.get();
 
-                                // Check channel
-                                let channel_desc: String;
+                                'pts: {
+                                    // Check channel
+                                    let channel_desc: String;
 
-                                if let Some(gch) = get_gch(&ctx, new_message.channel_id).await {
-                                    if let Some(pid) = gch.parent_id && let Some(pgch) = get_gch(&ctx, pid).await {
-                                        if pgch.topic.unwrap_or_default().contains("<nopts>") {break 'msg;}
+                                    if let Some(gch) = get_gch(&ctx, new_message.channel_id).await {
+                                        if let Some(pid) = gch.parent_id && let Some(pgch) = get_gch(&ctx, pid).await {
+                                            if pgch.topic.unwrap_or_default().contains("<nopts>") {break 'pts;}
+                                        }
+
+                                        channel_desc = gch.topic.unwrap_or_default();
+                                    } else {break 'pts;}
+
+                                    if channel_desc.contains("<nopts>") {break 'pts;}
+
+                                    // Calculate points
+                                    let mut points = data.points.lock().unwrap();
+                                    let msg_len: u64 = clean_msg(&new_message.content).len() as u64;
+                                    let mut new_pts: u64 = (msg_len / 5u64).max(1).min(20);
+
+                                    let re = Regex::new(r"<(\d+)ptx>").unwrap();
+                                    if let Some(caps) = re.captures(&channel_desc) {
+                                        new_pts *= caps[1].parse::<u64>().unwrap();
                                     }
 
-                                    channel_desc = gch.topic.unwrap_or_default();
-                                } else {break 'msg;}
-
-                                if channel_desc.contains("<nopts>") {break 'msg;}
-
-                                // Calculate points
-                                let mut points = data.points.lock().unwrap();
-                                let msg_len: u64 = clean_msg(&new_message.content).len() as u64;
-                                let mut new_pts: u64 = (msg_len / 5u64).max(1).min(20);
-
-                                let re = Regex::new(r"<(\d+)ptx>").unwrap();
-                                if let Some(caps) = re.captures(&channel_desc) {
-                                    new_pts *= caps[1].parse::<u64>().unwrap();
+                                    // Add points
+                                    println!("a");
+                                    if let Some(p) = points.get_mut(&author) {*p += new_pts;}
+                                    else {points.insert(author, new_pts);}
                                 }
-
-                                // Add points
-                                if let Some(p) = points.get_mut(&author) {*p += new_pts;}
-                                else {points.insert(author, new_pts);}
 
                                 // Update quicktime messages
                                 let mut qt = data.quicktime.lock().unwrap();
-                                
+
                                 for (s, v) in qt.iter_mut() {
                                     if new_message.content.to_lowercase() == s.split(":").last().unwrap() {
                                         v.push(author);
