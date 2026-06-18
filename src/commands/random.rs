@@ -3,78 +3,23 @@ use rand::Rng;
 use crate::{Context, Error};
 use crate::types::traits::Bias;
 use crate::types::weapon::Weapon;
+use crate::types::wroll::WRoll;
 
-#[poise::command(
-    slash_command,
-    description_localized("en-US", "Flip a coin")
-)]
-pub async fn flip(ctx: Context<'_>) -> Result<(), Error> {
-    ctx.say(
-        if rand::thread_rng().gen_range(0..2) == 1 {"HEADS (1)"}
-        else {"TAILS (0)"}
-    ).await?;
-
-    Ok(())
-}
-
-#[poise::command(
-    slash_command,
-    description_localized("en-US", "Roll a die")
-)]
-pub async fn roll(
+async fn wroll(
     ctx: Context<'_>,
-    #[description = "Side count"] sides: u32,
-) -> Result<(), Error> {
-    ctx.say(format!("{} (d{})", rand::thread_rng().gen_range(1..=sides), sides)).await?;
-    Ok(())
-}
-
-#[poise::command(
-    slash_command,
-    description_localized("en-US", "Use a ranged weapon")
-)]
-pub async fn shoot(
-    ctx: Context<'_>,
-    #[description = "Your weapon"] weapon: Weapon,
-    #[description = "List of modifiers to your attack"] flags: String,
+    flags: String,
+    mut flag_cons: impl FnMut(char, &mut i32, &mut i32) -> i32,
+    settings: WRoll<'_>,
 ) -> Result<(), Error> {
     let mut ad: i32 = 0;
     let mut n1_bar: i32 = 0;
 
     // Get bar
-    let mut bar: i32 = 11;
+    let mut bar: i32 = settings.init_bar;
 
     for c in flags.chars() {
-        bar += match c {
-            'A' => {ad += 1; 0},
-            'r' => {n1_bar += 4; ad += 1; 2},
-            'F' => {ad += 1; 4},
-            'b' => {ad -= 1; 0},
-            'B' => {ad -= 1; 0},
-            'D' => {ad -= 1; 0},
-            'e' => -4,
-            'n' => -4,
-            'd' => -3,
-            's' => -3,
-            'l' => -2,
-            'o' =>  0,
-            'a' =>  1,
-            'L' =>  3,
-            'v' =>  3,
-            'f' =>  5,
-            _   =>  0
-        };
+        bar += flag_cons(c, &mut ad, &mut n1_bar);
     }
-
-    bar -= weapon.bias();
-
-    if weapon.auto() {
-        n1_bar += 4;
-        ad += 1;
-        bar += 2;
-    }
-
-    if weapon == Weapon::railgun {n1_bar += 1;}
 
     // Get roll
     let rolls: Vec<i32> = (1..(ad.abs() + 2))
@@ -91,18 +36,91 @@ pub async fn shoot(
     let mut res: String = String::new();
     
     if !nat {
-        res += &if roll >= bar {format!("**HIT** -- {} ≥ {}", roll, bar)}
-                else {format!("**MISS** -- {} < {}", roll, bar)};
+        res += &if roll >= bar {format!("**{}** -- {} ≥ {}", settings.succ_msg.to_uppercase(), roll, bar)}
+                else {format!("**{}** -- {} < {}", settings.fail_msg.to_uppercase(), roll, bar)};
     } else {
-        res += if nat_min {
-                    if weapon.jammable() {"**JAMMED** -- "}
-                    else {"**MISS** -- "}}
-               else {"**CRIT!** -- "};
+        res += &if nat_min {format!("**{}** -- ", settings.fumb_msg.to_uppercase())}
+                else {format!("**{}** -- ", settings.crit_msg.to_uppercase())};
         res += &format!("NAT {}", roll);
     }
 
-    res += &format!("\n-# weapon: {:?}, flags: {}", weapon, flags + if weapon.auto() {"r"} else {""});
-
+    res += &format!("\n-# flags: {}", flags);
     ctx.say(res).await?;
     Ok(())
+}
+
+#[poise::command(slash_command, subcommands(
+    "flip",
+    "roll",
+    "shoot",
+))]
+pub async fn random(_ctx: Context<'_>) -> Result<(), Error> {Ok(())}
+
+#[poise::command(
+    slash_command,
+    description_localized("en-US", "Flip a coin")
+)]
+async fn flip(ctx: Context<'_>) -> Result<(), Error> {
+    ctx.say(
+        if rand::thread_rng().gen_range(0..2) == 1 {"HEADS (1)"}
+        else {"TAILS (0)"}
+    ).await?;
+
+    Ok(())
+}
+
+#[poise::command(
+    slash_command,
+    description_localized("en-US", "Roll a die")
+)]
+async fn roll(
+    ctx: Context<'_>,
+    #[description = "Side count"] sides: u32,
+) -> Result<(), Error> {
+    ctx.say(format!("{} (d{})", rand::thread_rng().gen_range(1..=sides), sides)).await?;
+    Ok(())
+}
+
+#[poise::command(
+    slash_command,
+    description_localized("en-US", "Use a ranged weapon")
+)]
+pub async fn shoot(
+    ctx: Context<'_>,
+    #[description = "Your weapon"] weapon: Weapon,
+    #[description = "List of modifiers to your attack"] flags: String,
+) -> Result<(), Error> {
+    return wroll(
+        ctx,
+        flags
+            + if weapon.auto() {"r"} else {""}
+            + if weapon == Weapon::railgun {"R"} else {""},
+        |c, ad, n1_bar| match c {
+            'A' => {*ad += 1; 0},
+            'r' => {*n1_bar += 4; *ad += 1; 2},
+            'R' => {*n1_bar += 1; 0},
+            'F' => {*ad += 1; 4},
+            'b' => {*ad -= 1; 0},
+            'B' => {*ad -= 1; 0},
+            'D' => {*ad -= 1; 0},
+            'e' => -4,
+            'n' => -4,
+            'd' => -3,
+            's' => -3,
+            'l' => -2,
+            'o' =>  0,
+            'a' =>  1,
+            'L' =>  3,
+            'v' =>  3,
+            'f' =>  5,
+            _   =>  0
+        },
+        WRoll {
+            init_bar: 11 - weapon.bias(),
+            crit_msg: "CRIT!",
+            succ_msg: "HIT",
+            fail_msg: "MISS",
+            fumb_msg: if weapon.jammable() {"JAMMED"} else {"MISS"},
+        }
+    ).await;
 }
