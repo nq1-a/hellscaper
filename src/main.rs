@@ -177,7 +177,6 @@ async fn main() {
                                     }
 
                                     // Add points
-                                    println!("a");
                                     if let Some(p) = points.get_mut(&author) {*p += new_pts;}
                                     else {points.insert(author, new_pts);}
                                 }
