@@ -44,7 +44,7 @@ async fn wroll(
         res += &format!("NAT {}", roll);
     }
 
-    res += &format!("\n-# flags: {}", flags);
+    res += &format!("\n-# flags: {}{}", flags, settings.tail_msg);
     ctx.say(res).await?;
     Ok(())
 }
@@ -121,6 +121,7 @@ pub async fn shoot(
             succ_msg: "HIT",
             fail_msg: "MISS",
             fumb_msg: if weapon.jammable() {"JAMMED"} else {"MISS"},
+            tail_msg: &format!(", weapon: {:?}", weapon),
         }
     ).await;
 }

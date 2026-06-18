@@ -4,4 +4,5 @@ pub struct WRoll<'a> {
     pub succ_msg: &'a str,
     pub fail_msg: &'a str,
     pub fumb_msg: &'a str,
+    pub tail_msg: &'a str,
 }
