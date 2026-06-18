@@ -122,7 +122,7 @@ async fn main() {
                 commands::archive::archive(),
                 commands::level::level(),
                 commands::party::party(),
-                commands::quicktime::quicktime(),
+                commands::game::game(),
                 commands::random::flip(),
                 commands::random::roll(),
                 commands::random::shoot(),

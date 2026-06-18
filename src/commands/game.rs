@@ -3,15 +3,15 @@ use tokio::time::{Duration, sleep};
 use crate::{Context, Error};
 
 #[poise::command(slash_command, subcommands(
-    "new"
+    "quicktime"
 ))]
-pub async fn quicktime(_ctx: Context<'_>) -> Result<(), Error> {Ok(())}
+pub async fn game(_ctx: Context<'_>) -> Result<(), Error> {Ok(())}
 
 #[poise::command(
     slash_command,
     description_localized("en-US", "Create a new quicktime event")
 )]
-async fn new(
+async fn quicktime(
     ctx: Context<'_>,
     prompt: String,
     #[description = "What the player must say (case-insensitive)"]
