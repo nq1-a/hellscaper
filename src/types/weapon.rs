@@ -3,6 +3,8 @@ use crate::types::traits::Bias;
 #[allow(non_camel_case_types)]
 #[derive(Debug, PartialEq, poise::ChoiceParameter)]
 pub enum Weapon {
+    bow,
+    crossbow,
     machine,
     derringer,
     pipe,
@@ -21,13 +23,11 @@ pub enum Weapon {
     #[name = "thrown expl."]
     thrown_expl,
     assault,
-    carbine,
     #[name = "electron gun"]
     electron_gun,
     railgun,
     rifle,
     coilgun,
-    dmr,
     varmint,
     sniper,
     laser,
@@ -70,16 +70,16 @@ impl Bias for Weapon {
             Self::musket        => -1,
             Self::spit          => -1,
             Self::zip           => -1,
+            Self::bow           =>  0,
             Self::revolver      =>  0,
             Self::shotgun       =>  0,
             Self::thrown_blade  =>  0,
-            Self::carbine       =>  1,
+            Self::crossbow      =>  1,
             Self::pistol        =>  1,
             Self::railgun       =>  1,
             Self::rifle         =>  1,
             Self::submachine    =>  1,
             Self::assault       =>  2,
-            Self::dmr           =>  2,
             Self::electron_gun  =>  2,
             Self::thrown_expl   =>  2,
             Self::coilgun       =>  3,
