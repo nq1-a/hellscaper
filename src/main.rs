@@ -120,9 +120,9 @@ async fn main() {
         .options(poise::FrameworkOptions {
             commands: vec![
                 commands::archive::archive(),
+                commands::game::game(),
                 commands::level::level(),
                 commands::party::party(),
-                commands::game::game(),
                 commands::random::random(),
                 commands::random::shoot(),
                 commands::util::askforethnicpeter(),
