@@ -9,6 +9,7 @@ use poise::serenity_prelude::{
 };
 
 use crate::{Context, Error};
+use crate::commands::level::{get_points, lvl_points};
 use crate::types::arc::Campaign;
 
 #[poise::command(slash_command, subcommands(
@@ -30,6 +31,15 @@ async fn new(
     ctx: Context<'_>,
     name: String,
 ) -> Result<(), Error> {
+    let author: u64 = ctx.author().id.get();
+    if lvl_points(get_points(&ctx.data(), author)) < 5 {
+        ctx.send(CreateReply::default()
+            .content("MUST BE AT LEAST LEVEL 5 TO CREATE A PARTY")
+        ).await?
+
+        return Ok(());
+    }
+
     if name.chars().count() > 48 {
         ctx.send(CreateReply::default()
             .content("NAME IS TOO LONG")
@@ -39,7 +49,6 @@ async fn new(
         return Ok(());
     }
 
-    let author: u64 = ctx.author().id.get();
     let valid: bool;
 
     'get: {
