@@ -35,7 +35,7 @@ async fn new(
     if lvl_points(get_points(&ctx.data(), author)) < 5 {
         ctx.send(CreateReply::default()
             .content("MUST BE AT LEAST LEVEL 5 TO CREATE A PARTY")
-        ).await?
+        ).await?;
 
         return Ok(());
     }
