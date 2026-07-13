@@ -21,6 +21,7 @@ mod commands;
 mod handler;
 mod types;
 
+use commands::level::add_points;
 use types::data::Data;
 
 pub type Error = Box<dyn std::error::Error + Send + Sync>;
@@ -48,7 +49,7 @@ fn clean_msg(msg: &str) -> String {
     let re = Regex::new(r"<(@|#|t:)\d+(:.)?>").unwrap();
     let res = re.replace_all(msg, "@@@@");
 
-    // FIXME: god help us all
+    // FIXME: God help us all
     let re = Regex::new(r"[^\x{0020}-\x{02AF}\x{0370}-\x{070D}\x{0710}-\x{08E1}\x{08E3}-\x{115E}\x{1161}-\x{17FF}\x{1C80}-\x{1FFF}\x{2070}-\x{2DDE}\x{2E00}-\x{D7FB}\x{F900}-\x{FDFD}\x{FE30}-\x{FF9F}\x{FFA1}-\x{FFEE}]|\x{00AD}|\s|\p{M}").unwrap();
     re.replace_all(&res, "").to_string()
 }
@@ -147,10 +148,11 @@ async fn main() {
                             save_loop(&data).await;
                         },
                         serenity::FullEvent::Message {new_message} => 'msg: {
-                            {
-                                if new_message.author.bot || new_message.author.system {break 'msg;}
-                                let author: u64 = new_message.author.id.get();
+                            if new_message.author.bot || new_message.author.system {break 'msg;}
+                            let author: u64 = new_message.author.id.get();
 
+                            // Block to contain mutexes
+                            {
                                 'pts: {
                                     // Check channel
                                     let channel_desc: String;
@@ -166,7 +168,6 @@ async fn main() {
                                     if channel_desc.contains("<nopts>") {break 'pts;}
 
                                     // Calculate points
-                                    let mut points = data.points.lock().unwrap();
                                     let msg_len: u64 = clean_msg(&new_message.content).len() as u64;
                                     let mut new_pts: u64 = (msg_len / 5u64).max(1).min(20);
 
@@ -176,8 +177,7 @@ async fn main() {
                                     }
 
                                     // Add points
-                                    if let Some(p) = points.get_mut(&author) {*p += new_pts;}
-                                    else {points.insert(author, new_pts);}
+                                    add_points(&data, author, new_pts);
                                 }
 
                                 // Update quicktime messages

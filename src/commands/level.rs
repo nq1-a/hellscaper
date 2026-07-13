@@ -6,13 +6,25 @@ use poise::serenity_prelude::{
 };
 
 use crate::{Context, Error};
+use crate::types::data::Data;
+
+pub fn add_points(data: &Data, user: u64, pts: u64) {
+    let mut points = data.points.lock().unwrap();
+    if let Some(p) = points.get_mut(&user) {*p += pts;}
+    else {points.insert(user, pts);}
+}
+
+pub fn get_points(data: &Data, user: u64) -> u64 {
+    let points = data.points.lock().unwrap();
+    return *points.get(&user).unwrap_or(&0);
+}
 
 pub fn lvl_points(pts: u64) -> u64 {
     let fpts: f64 = pts as f64;
 
     (((fpts + 25.) / 4.5).log(2.2) + fpts / (1000. + fpts / 100.) - 1.)
     .max(1.) as u64
-}
+} 
 
 #[poise::command(slash_command, subcommands(
     "view",
@@ -33,12 +45,7 @@ async fn view(
     user: Option<User>,
 ) -> Result<(), Error> {
     let target = user.as_ref().unwrap_or_else(|| ctx.author());
-    let points_t: u64;
-
-    {
-        let points = ctx.data().points.lock().unwrap();
-        points_t = *points.get(&target.id.get()).unwrap_or(&0);
-    }
+    let points_t: u64 = get_points(&ctx.data(), target.id.get());
 
     ctx.say(format!("**{}**\nLEVEL: {}\nPOINTS: {}",
         target.name,
@@ -146,12 +153,11 @@ async fn vanityequip(
 
     if let Some(member) = ctx.author_member().await {
         {
-            let points = ctx.data().points.lock().unwrap();
             let vanities = ctx.data().vanities.lock().unwrap();
 
             if let Some(l) = vanities.get(&role_id) {
                 successes += 1u8;
-                if lvl_points(*points.get(&author_id).unwrap_or(&0)) >= *l {
+                if lvl_points(get_points(&ctx.data(), author_id)) >= *l {
                     successes += 1u8;
                 }
             }
@@ -185,6 +191,7 @@ async fn vanityunequip(
     let role_id: u64 = role.id.get();
     let mut successes: u8 = 0;
 
+    // FIXME: This code is absolute garbage lmao
     if let Some(member) = ctx.author_member().await {
         {
             let vanities = ctx.data().vanities.lock().unwrap();

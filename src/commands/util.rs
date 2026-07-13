@@ -10,7 +10,7 @@ use poise::serenity_prelude::{
 };
 
 use crate::{Context, Error};
-use crate::commands::level::lvl_points;
+use crate::commands::level::{get_points, lvl_points};
 use crate::types::gif::Gif;
 
 #[poise::command(
@@ -63,15 +63,9 @@ pub async fn ping(ctx: Context<'_>) -> Result<(), Error> {
 pub async fn sayraw(ctx: Context<'_>, text: String) -> Result<(), Error> {
     let author_id: u64 = ctx.author().id.get();
     let channel: ChannelId = ctx.channel_id();
-    let lvl: u64;
-
-    {
-        let points = ctx.data().points.lock().unwrap();
-        lvl = lvl_points(*points.get(&author_id).unwrap_or(&0));
-    }
 
     // TODO: Make this configurable
-    if lvl >= 30 {
+    if lvl_points(get_points(&ctx.data(), author_id)) >= 30 {
         ctx.send(CreateReply::default()
             .content("ON IT")
             .ephemeral(true)
