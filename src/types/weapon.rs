@@ -66,6 +66,7 @@ impl Weapon {
             Self::pipe          => "BOOM!",
             Self::server_ban    => "DEMOTED",
             Self::spit          => "TOO DRY",
+            Self::thrown_expl   => "BACKFIRED",
             _                   => "JAMMED"
         }
     }
@@ -78,7 +79,6 @@ impl Weapon {
             Self::laser         => false,
             Self::slingshot     => false,
             Self::thrown_blade  => false,
-            Self::thrown_expl   => false,
             Self::thrown_misc   => false,
             _                   => true
         }
