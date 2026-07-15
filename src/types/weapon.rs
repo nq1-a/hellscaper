@@ -11,7 +11,7 @@ pub enum Weapon {
     #[name = "pipe gun"]
     pipe,
     slingshot,
-    #[name = "thrown misc"]
+    #[name = "thrown misc."]
     thrown_misc,
     musket,
     shotgun,
