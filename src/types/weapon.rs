@@ -59,13 +59,24 @@ impl Weapon {
         }
     }
 
+    pub fn jam_msg(&self) -> &str {
+        if !self.jammable() {return "MISS";}
+
+        match self {
+            Self::pipe          => "BOOM!",
+            Self::server_ban    => "DEMOTED",
+            Self::spit          => "TOO DRY",
+            _                   => "JAMMED"
+        }
+    }
+
     pub fn jammable(&self) -> bool {
         match self {
+            Self::bow           => false,
+            Self::crossbow      => false,
             Self::electron_gun  => false,
             Self::laser         => false,
-            Self::server_ban    => false,
             Self::slingshot     => false,
-            Self::spit          => false,
             Self::thrown_blade  => false,
             Self::thrown_expl   => false,
             Self::thrown_misc   => false,

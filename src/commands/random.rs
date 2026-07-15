@@ -120,7 +120,7 @@ pub async fn shoot(
             crit_msg: "CRIT!",
             succ_msg: "HIT",
             fail_msg: "MISS",
-            fumb_msg: if weapon.jammable() {"JAMMED"} else {"MISS"},
+            fumb_msg: weapon.jam_msg(),
             tail_msg: &format!(", weapon: {:?}", weapon),
         }
     ).await;
