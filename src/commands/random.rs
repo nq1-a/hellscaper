@@ -94,7 +94,7 @@ pub async fn shoot(
         ctx,
         flags
             + if weapon.auto() {"r"} else {""}
-            + if weapon == Weapon::railgun {"E"} else {""},
+            + if weapon.experimental() {"E"} else {""},
         |c, ad, n1_bar| match c {
             'A' => {*ad += 1; 0},
             'r' => {*n1_bar += 4; *ad += 1; 2},

@@ -44,6 +44,16 @@ impl Weapon {
         }
     }
 
+    pub fn experimental(&self) -> bool {
+        match self {
+            Self::coilgun       => true,
+            Self::pipe          => true,
+            Self::railgun       => true,
+            Self::zip           => true,
+            _                   => false
+        }
+    }
+
     pub fn jammable(&self) -> bool {
         match self {
             Self::electron_gun  => false,
