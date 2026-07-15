@@ -98,7 +98,7 @@ pub async fn shoot(
         |c, ad, n1_bar| match c {
             'A' => {*ad += 1; 0},
             'r' => {*n1_bar += 4; *ad += 1; 2},
-            'E' => {*n1_bar *= 2; 0},
+            'E' => {*n1_bar = 1.max(n1_bar * 2); 0},
             'F' => {*ad += 1; 4},
             'b' => {*ad -= 1; 0},
             'B' => {*ad -= 1; 0},
