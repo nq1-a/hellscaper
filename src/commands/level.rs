@@ -21,7 +21,6 @@ pub fn get_points(data: &Data, user: u64) -> u64 {
 
 pub fn lvl_points(pts: u64) -> u64 {
     let fpts: f64 = pts as f64;
-
     (((fpts + 25.) / 4.5).log(2.2) + fpts / (1000. + fpts / 100.) - 1.)
     .max(1.) as u64
 } 

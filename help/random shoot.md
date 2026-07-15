@@ -13,6 +13,7 @@ Railguns have +1 jam chance. Lasers and electron guns cannot jam.
 Flags:
 - **A**dvantage
 - **r**apid fire (advantage, +2, +4 jam chance)
+- **E**xperimental (x2 jam chance)
 - **F**anning (advantage, +4)
 - **b**ehind wall (disadvantage)
 - **B**lind (disadvantage)
