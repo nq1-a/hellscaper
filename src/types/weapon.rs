@@ -5,8 +5,10 @@ use crate::types::traits::Bias;
 pub enum Weapon {
     bow,
     crossbow,
+    #[name = "machine gun"]
     machine,
     derringer,
+    #[name = "pipe gun"]
     pipe,
     slingshot,
     #[name = "thrown misc"]
@@ -16,12 +18,15 @@ pub enum Weapon {
     spit,
     #[name = "thrown blade"]
     thrown_blade,
+    #[name = "zip gun"]
     zip,
     pistol,
     revolver,
+    #[name = "smg"]
     submachine,
     #[name = "thrown expl."]
     thrown_expl,
+    #[name = "assault rifle"]
     assault,
     #[name = "electron gun"]
     electron_gun,
