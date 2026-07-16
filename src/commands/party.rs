@@ -206,6 +206,7 @@ async fn poll(
         .answers(vec![
             CreatePollAnswer::new().text("ready").emoji("✅".to_string()),
             CreatePollAnswer::new().text("in a bit"),
+            CreatePollAnswer::new().text("in 30 minutes"),
             CreatePollAnswer::new().text("in 1-2 hours"),
             CreatePollAnswer::new().text("in 3-6 hours"),
             CreatePollAnswer::new().text("not this session").emoji("❌".to_string()),
