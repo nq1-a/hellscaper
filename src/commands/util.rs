@@ -10,7 +10,12 @@ use poise::serenity_prelude::{
 };
 
 use crate::{Context, Error};
-use crate::commands::level::{get_points, lvl_points};
+use crate::commands::level::{
+    add_points,
+    dec_points,
+    get_points,
+    lvl_points
+};
 use crate::types::gif::Gif;
 
 #[poise::command(
@@ -108,18 +113,48 @@ pub async fn shutdown(ctx: Context<'_>) -> Result<(), Error> {
 
 #[poise::command(
     slash_command,
-    description_localized("en-US", "Ask for ethnic Peter"),
+    description_localized("en-US", "Pray to ethnic Peter"),
 )]
-pub async fn askforethnicpeter(ctx: Context<'_>) -> Result<(), Error> {
+pub async fn praytoethnicpeter(ctx: Context<'_>) -> Result<(), Error> {
+    let author_id: u64 = ctx.author().id.get();
+    let splash: Vec<&str> = vec![
+        "Hi Im Ethnic Peter",
+        "petah",
+        "what you gonna make me do? whack off a guy?",
+        "and the",
+        "allah is the greatest, but im greatester",
+        "uhhhhhhhhhhhhhhhhhhhhhhhhhhhhh",
+        "i want to eat Ethnic Food:tm:",
+        "Quote - Quoteman",
+        "witness my power ;)",
+        "your mother was so great that i deemed her worthy of my jizz",
+        "he knew GERIATRICWIZARDS",
+        "try saying the magic word",
+    ];
+    
     let ep: u32;
+    let picked: &str;
+    let picked_i: usize;
 
     {
         let mut ethnicpeters = ctx.data().ethnicpeters.lock().unwrap();
         *ethnicpeters += 1;
         ep = *ethnicpeters;
+
+        let mut rng = rand::thread_rng();
+        picked_i = rng.gen_range(0..splash.len());
+        picked = splash[picked_i];
     }
 
-    ctx.say(format!("**YOU ASKED FOR ETHNIC PETER**\nTHIS IS ASK #{}", ep)).await?;
+    let extra: &str = match &picked_i {
+        11          => {dec_points(&ctx.data(), author_id, 10); "YOU LOST 10 POINTS"},
+        2 | 4 | 9   => {dec_points(&ctx.data(), author_id,  5); "YOU LOST 5 POINTS"},
+        1 | 5 | 10  => {add_points(&ctx.data(), author_id,  5); "YOU GAINED 5 POINTS"},
+        8           => {add_points(&ctx.data(), author_id, 10); "YOU GAINED 10 POINTS"},
+        _           => "NOTHING HAPPENED"
+    };
+
+    ctx.say(format!("**YOU PRAYED TO ETHNIC PETER**\nHE SAYS TO YOU: \"{}\"\n{}\n-# THIS IS PRAYER #{}", picked, extra, ep)).await?;
     Ok(())
 }
 

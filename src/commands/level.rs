@@ -14,6 +14,12 @@ pub fn add_points(data: &Data, user: u64, pts: u64) {
     else {points.insert(user, pts);}
 }
 
+pub fn dec_points(data: &Data, user: u64, pts: u64) {
+    let mut points = data.points.lock().unwrap();
+    if let Some(p) = points.get_mut(&user) {*p -= pts.min(*p);}
+    else {points.insert(user, pts);}
+}
+
 pub fn get_points(data: &Data, user: u64) -> u64 {
     let points = data.points.lock().unwrap();
     return *points.get(&user).unwrap_or(&0);
