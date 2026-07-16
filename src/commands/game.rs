@@ -29,7 +29,8 @@ async fn quicktime(
     
     let anchor = ctx.channel_id().send_message(
         &ctx.http(),
-        CreateMessage::new().content(&prompt)
+        CreateMessage::new()
+            .content(&format!("**QUICKTIME EVENT**\n{}", prompt))
     ).await?;
 
     let mid: u64 = anchor.id.get();
