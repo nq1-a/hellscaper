@@ -4,6 +4,7 @@ Probably nothing useful to you. This bot was made primarily to make one specific
 # Prerequisites
 - cargo
 - rust (>=2024 edition)
+- Your soul
 
 # Run instructions
 1. Clone the repo into a new folder with `git clone`.
