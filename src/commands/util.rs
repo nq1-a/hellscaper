@@ -53,7 +53,7 @@ pub async fn ping(ctx: Context<'_>) -> Result<(), Error> {
     let millis: u128 = ctx.ping().await.as_millis();
 
     if millis == 0 {
-       ctx.say("bot has not yet performed a full heartbeat --- please try again later").await?; 
+       ctx.say("bot has not yet performed a full heartbeat --- please try again later").await?;
     } else {
         ctx.say(format!("**PONG!**\nDelay: {} ms", ctx.ping().await.as_millis())).await?;
     }
@@ -115,7 +115,11 @@ pub async fn shutdown(ctx: Context<'_>) -> Result<(), Error> {
     slash_command,
     description_localized("en-US", "Pray to ethnic Peter"),
 )]
-pub async fn praytoethnicpeter(ctx: Context<'_>) -> Result<(), Error> {
+pub async fn praytoethnicpeter(
+  ctx: Context<'_>,
+  #[description = "Multiplier on the point gain/loss (default 1, min 0, max 5)"]
+  mult: Option<f32>,
+) -> Result<(), Error> {
     let author_id: u64 = ctx.author().id.get();
     let splash: Vec<&str> = vec![
         "Hi Im Ethnic Peter",
@@ -131,7 +135,7 @@ pub async fn praytoethnicpeter(ctx: Context<'_>) -> Result<(), Error> {
         "he knew GERIATRICWIZARDS",
         "try saying the magic word",
     ];
-    
+
     let ep: u32;
     let picked: &str;
     let picked_i: usize;
@@ -146,13 +150,17 @@ pub async fn praytoethnicpeter(ctx: Context<'_>) -> Result<(), Error> {
         picked = splash[picked_i];
     }
 
-    let extra: &str = match &picked_i {
-        11          => {dec_points(&ctx.data(), author_id, 10); "YOU LOST 10 POINTS"},
-        2 | 4 | 9   => {dec_points(&ctx.data(), author_id,  5); "YOU LOST 5 POINTS"},
-        1 | 5 | 10  => {add_points(&ctx.data(), author_id,  5); "YOU GAINED 5 POINTS"},
-        8           => {add_points(&ctx.data(), author_id, 10); "YOU GAINED 10 POINTS"},
-        _           => "NOTHING HAPPENED"
-    };
+    let pts: i64 = (mult.unwrap_or(1.).max(0.).min(5.) * match picked_i {
+        11          => -10.,
+        2 | 4 | 9   =>  -5.,
+        1 | 5 | 10  =>   5.,
+        8           =>  10.,
+        _           => 0.
+    }).round() as i64;
+
+    let extra: String = if      pts > 0 {add_points(&ctx.data(), author_id,  pts as u64); format!("YOU GANIED {} POINTS", pts)}
+                        else if pts < 0 {dec_points(&ctx.data(), author_id, -pts as u64); format!("YOU LOST {} POINTS",   pts)}
+                        else            {"NOTHING HAPPENED".to_string()};
 
     ctx.say(format!("**YOU PRAYED TO ETHNIC PETER**\nHE SAYS TO YOU: \"{}\"\n{}\n-# THIS IS PRAYER #{}", picked, extra, ep)).await?;
     Ok(())
