@@ -158,7 +158,7 @@ pub async fn praytoethnicpeter(
         _           => 0.
     }).round() as i64;
 
-    let extra: String = if      pts > 0 {add_points(&ctx.data(), author_id,  pts as u64); format!("YOU GANIED {} POINTS",  pts)}
+    let extra: String = if      pts > 0 {add_points(&ctx.data(), author_id,  pts as u64); format!("YOU GAINED {} POINTS",  pts)}
                         else if pts < 0 {dec_points(&ctx.data(), author_id, -pts as u64); format!("YOU LOST {} POINTS",   -pts)}
                         else            {"NOTHING HAPPENED".to_string()};
 
