@@ -76,7 +76,10 @@ pub async fn sayraw(ctx: Context<'_>, text: String) -> Result<(), Error> {
             .ephemeral(true)
         ).await?;
 
-        channel.say(&ctx.http(), text).await?;
+        channel.say(&ctx.http(), text
+			.replace("@everyone", "\\@everyone")
+			.replace("@here", "\\@here")
+		).await?;
     } else {
         ctx.send(CreateReply::default()
             .content("MUST BE AT LEAST LEVEL 30 TO USE SAYRAW")
@@ -95,8 +98,8 @@ pub async fn sayraw(ctx: Context<'_>, text: String) -> Result<(), Error> {
 pub async fn shutdown(ctx: Context<'_>) -> Result<(), Error> {
     let picked: &str;
     let splash: Vec<&str> = vec![
-        "AU REVOIR",
         "ARRIVEDERCI",
+        "AU REVOIR",
         "FAREWELL",
         "SAYONARA",
     ];

@@ -46,7 +46,7 @@ fn make_dir(path: &str) {
 
 // Message cleaning
 fn clean_msg(msg: &str) -> String {
-    let re = Regex::new(r"<(@|#|t:)\d+(:.)?>").unwrap();
+    let re = Regex::new(r"<(@|#|t:)&?\d+(:.)?>").unwrap();
     let res = re.replace_all(msg, "@@@@");
 
     // FIXME: God help us all
@@ -67,7 +67,7 @@ pub async fn get_gch(ctx: &serenity::Context, id: ChannelId) -> Option<GuildChan
 pub async fn save_loop(data: &Data) {
     loop {
         sleep(Duration::from_secs(30)).await;
-        
+
         if let Ok(ser) = serde_json::to_string(data) {
             // Get time
             let ctime = SystemTime::now();
@@ -201,7 +201,7 @@ async fn main() {
         })
         .setup(|ctx, _, fwk| {
             Box::pin(async move {
-                
+
                 let mut data: Data = serde_json::from_str::<Data>(
                     &read_fs("state.json").unwrap_or_default()
                 ).unwrap_or_default();
@@ -209,7 +209,7 @@ async fn main() {
                 data.ready = Mutex::new(false);
                 data.quicktime = Default::default();
                 data.load_cfg("config.toml");
-                
+
                 for id in serde_json::from_str::<Vec<u64>>(
                     data.config.get(
                         if data.config.get("testing").unwrap() == "true" {"guild_ids_testing"}
