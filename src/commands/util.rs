@@ -121,6 +121,7 @@ pub async fn praytoethnicpeter(
   mult: Option<f32>,
 ) -> Result<(), Error> {
     let author_id: u64 = ctx.author().id.get();
+    let pinged: String = format!("<@{}> haha get pinged", author_id);
     let splash: Vec<&str> = vec![
         // 0-9
         "Hi Im Ethnic Peter",
@@ -136,7 +137,7 @@ pub async fn praytoethnicpeter(
         // 10-19
         "he knew GERIATRICWIZARDS",
         "try saying the magic word",
-        &format!("<@{}> haha get pinged", author_id),
+		&pinged,
         "ac6d3a0502ed084c26488848927155daaca487de6ac36f65694f87f8c0d0a8eb1564ccb284c0fc5b3f20f708b6818213be2f479be84507499ef186ac0f0771db098ae096c15585d4dce2f14d68a50a8337e03d218f8523d88a1513f0a7465498ffe23ba85a698a9e773aa85e1ab039b7ea45e6064e5cda14c4489b454e3c0d7839773cfe645d53f3316cbcef1608255af79e0a94f42c8090d9d0ab1545f6eec2556e9fb5e444555200106d1f035ef28b22b5ac9a1a2cbaa56358670c85053af924205ed3b8ca3064fd60332d1a89df102b4419c7171ea0088d31e5541ccd29d0702b68bf0484c456a37df1f2900ae1cc6ab10261678eb339a3ffdc1652822727e24f5900f4b5fd0a8493f1d85c2abd96ca1ac217fba11073c235c5cd7f80acb0bc3f7aa19b6ac57c24ee68ed4a6952f951b0aaddfc0e8cdca7f471a1b5973ea19d35fa2e0a42feb5b2615491a203fed94d1ea836e139532948db4566b81602693fdd051abbd19d3d4a1c3826776989fa85969fcc8cfd77b0d0e215b4207a56280f8ac8d1f9504e1d53eb48371b4f78e80ff790397729d6c3d27d7ab783c023ce63b867fd320c9020f9ea3206f571b9d86ce8ec4e997490337b1848c63c903273e96f8eddb4f28443cb1cd330dec83773fbf7b857e1eac58cea7e5d07ae333a66cdd5b647ef1ccf12cdd94b0872fdc402dfb514ec06d1648264160412881953c84b64aff8b0d4bb4a306183a1b3876307fadfb925458dd8166286fd64c8dbd26f1a925c2d55cc91e6a380eac5c0faac6dc92a35abf75bfee86119ada86191b420c26a0c4d0b27df50f3a33e637e2739a9379ca83d7889b171e4bf9dfa870abfbd",
         "have some free points",
         "i am indifferent to genocide",
