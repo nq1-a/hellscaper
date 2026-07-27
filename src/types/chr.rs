@@ -1,11 +1,11 @@
 use serde::{Serialize, Deserialize};
 
-#[derive(Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct Stats {
     pub agility: i32,
     pub charisma: i32,
     pub intelligence: i32,
-    pub resillience: i32,
+    pub resilience: i32,
     pub strength: i32,
 }
 
@@ -14,14 +14,14 @@ impl Stats {
         agility: i32,
         charisma: i32,
         intelligence: i32,
-        resillience: i32,
+        resilience: i32,
         strength: i32,
     ) -> Result<Stats, String> {
         let stats: Stats = Stats {
             agility,
             charisma,
             intelligence,
-            resillience,
+            resilience,
             strength,
         };
 
@@ -40,7 +40,7 @@ impl Stats {
         self.agility.abs()
             .max(self.charisma.abs())
             .max(self.intelligence.abs())
-            .max(self.resillience.abs())
+            .max(self.resilience.abs())
             .max(self.strength.abs())
     }
 
@@ -48,7 +48,7 @@ impl Stats {
         self.agility +
         self.charisma +
         self.intelligence +
-        self.resillience +
+        self.resilience +
         self.strength
     }
 }

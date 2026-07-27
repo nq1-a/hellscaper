@@ -10,7 +10,7 @@ use crate::types::chr::Character;
 #[derive(Default, Serialize, Deserialize)]
 pub struct Data {
     pub campaigns: Mutex<HashMap<String, Campaign>>,
-    pub characters: Mutex<HashMap<String, Character>>,
+    pub characters: Mutex<HashMap<u64, HashMap<String, Character>>>,
     pub config: HashMap<String, String>,
     pub ethnicpeters: Mutex<u32>,
     pub points: Mutex<HashMap<u64, u64>>,

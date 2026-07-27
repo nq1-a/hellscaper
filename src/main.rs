@@ -121,6 +121,7 @@ async fn main() {
         .options(poise::FrameworkOptions {
             commands: vec![
                 commands::archive::archive(),
+                commands::character::character(),
                 commands::game::game(),
                 commands::level::level(),
                 commands::party::party(),

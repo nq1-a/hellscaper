@@ -26,7 +26,7 @@ async fn quicktime(
         .content("SUCCESS")
         .ephemeral(true)
     ).await?;
-    
+
     let anchor = ctx.channel_id().send_message(
         &ctx.http(),
         CreateMessage::new()
@@ -46,7 +46,7 @@ async fn quicktime(
 
     'collect: {
         let qt = ctx.data().quicktime.lock().unwrap();
-        
+
         if let Some(idv) = qt.get(&uid) {
             if idv.len() == 0 {
                 ulist = "NO CORRECT GUESSES".to_string();
