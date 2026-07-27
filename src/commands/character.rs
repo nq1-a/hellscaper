@@ -6,7 +6,8 @@ use crate::{Context, Error};
 use crate::types::chr::{Character, Stats};
 
 #[poise::command(slash_command, subcommands(
-    "new"
+    "new",
+    "list",
 ))]
 pub async fn character(_ctx: Context<'_>) -> Result<(), Error> {Ok(())}
 
@@ -16,7 +17,7 @@ pub async fn character(_ctx: Context<'_>) -> Result<(), Error> {Ok(())}
 )]
 async fn new(
     ctx: Context<'_>,
-    #[description = "A unique three-letter identifier"]
+    #[description = "A unique identifier (ideally 3 lowercase letters)"]
     iden: String,
     #[description = "The character's name"]
     name: String,
@@ -88,5 +89,62 @@ async fn new(
     ).await?;
 
     // Wrap up
+    Ok(())
+}
+
+#[poise::command(
+    slash_command,
+    description_localized("en-US", "List existing campaigns")
+)]
+async fn list(
+    ctx: Context<'_>,
+    #[description = "Which page you're on starting from 1 (each has 8 characters)"]
+    page: Option<u16>,
+) -> Result<(), Error> {
+    let author: u64 = ctx.author().id.get();
+    let mut list: String;
+
+    let page_c: u16 = page.unwrap_or(1).max(1);
+    let page_s: u16 = page_c - 1 << 3;
+
+    {
+        let mut characters = ctx.data().characters.lock().unwrap();
+
+        if !characters.contains_key(&author) {
+            characters.insert(author, HashMap::new());
+        };
+
+        let cl = characters.get_mut(&author).unwrap();
+
+        if cl.len() == 0 {
+            list = "YOU HAVE NO CHARACTERS".to_string();
+        } else if cl.len() as u16 <= page_s {
+            list = "NO CHARACTERS FOUND ON THIS PAGE".to_string();
+        } else {
+            list = format!("# PAGE {}/{}\n", page_c, (cl.len() - 1) / 8 + 1);
+            let mut i: u16 = 0;
+
+            for (k, v) in cl.iter() {
+                if i >= page_s + 8 {break;}
+
+                if i >= page_s {
+                    list = format!("{}**{}** ({})\n{}\n\n",
+                        list,
+                        v.name,
+                        k,
+                        v.stats,
+                    );
+                }
+
+                i += 1;
+            }
+        }
+    }
+
+    ctx.send(CreateReply::default()
+        .content(list)
+        .ephemeral(true)
+    ).await?;
+
     Ok(())
 }

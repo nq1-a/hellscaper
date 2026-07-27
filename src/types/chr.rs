@@ -1,3 +1,5 @@
+use std::fmt;
+
 use serde::{Serialize, Deserialize};
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -50,6 +52,20 @@ impl Stats {
         self.intelligence +
         self.resilience +
         self.strength
+    }
+}
+
+impl fmt::Display for Stats {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(
+            f,
+            "AG: {}\nCH: {}\nIN: {}\nRE: {}\nST: {}",
+            self.agility,
+            self.charisma,
+            self.intelligence,
+            self.resilience,
+            self.strength,
+        )
     }
 }
 

@@ -75,7 +75,7 @@ async fn new(
             .ephemeral(true)
         ).await?;
     }
-    
+
     Ok(())
 }
 
@@ -92,7 +92,7 @@ async fn join(
     {
         let mut campaigns = ctx.data().campaigns.lock().unwrap();
         let author = ctx.author().id.get();
-        
+
         if let Some(c) = campaigns.get_mut(&name) {
             if !c.includes(author) {
                 c.add(author);
@@ -118,7 +118,7 @@ async fn leave(
 
     {
         let mut campaigns = ctx.data().campaigns.lock().unwrap();
-        
+
         if let Some(c) = campaigns.get_mut(&name) {
             c.remove(ctx.author().id.get());
             success = true;
@@ -146,9 +146,9 @@ async fn list(ctx: Context<'_>) -> Result<(), Error> {
                 list = format!("{}## {}\n-# Members: {}\n\n",
                     list,
                     k,
-                    v.ping_list(", ")
+                    v.ping_list(", "),
                 );
-            } 
+            }
         }
     }
 
