@@ -5,10 +5,12 @@ use std::sync::Mutex;
 use serde::{Serialize, Deserialize};
 
 use crate::types::arc::Campaign;
+use crate::types::chr::Character;
 
 #[derive(Default, Serialize, Deserialize)]
 pub struct Data {
     pub campaigns: Mutex<HashMap<String, Campaign>>,
+    pub characters: Mutex<HashMap<String, Character>>,
     pub config: HashMap<String, String>,
     pub ethnicpeters: Mutex<u32>,
     pub points: Mutex<HashMap<u64, u64>>,

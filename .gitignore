@@ -1,6 +1,7 @@
 # Ignore all user generated data
 token.txt
 state.json
+state_backup.json
 state~.json
 archive
 config.toml
