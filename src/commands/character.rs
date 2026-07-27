@@ -61,11 +61,11 @@ async fn new(
         let iden_c = iden.clone();
 
         // Existence checks
-        let cl = if characters.contains_key(&author) {
-            characters.get_mut(&author).unwrap()
-        } else {
-            &mut characters.insert(author, HashMap::new()).unwrap()
+        if !characters.contains_key(&author) {
+            characters.insert(author, HashMap::new())
         };
+
+        let cl = characters.get_mut(&author).unwrap()
 
         valid = cl.contains_key(&iden_c);
         if valid {break 'get;}
