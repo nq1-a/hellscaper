@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 
 use poise::CreateReply;
+use poise::serenity_prelude::User;
 
 use crate::{Context, Error};
 use crate::types::chr::{Character, Stats};
@@ -98,10 +99,11 @@ async fn new(
 )]
 async fn list(
     ctx: Context<'_>,
+    user: Option<User>,
     #[description = "Which page you're on starting from 1 (each has 8 characters)"]
     page: Option<u16>,
 ) -> Result<(), Error> {
-    let author: u64 = ctx.author().id.get();
+    let target: u64 = user.as_ref().unwrap_or_else(|| ctx.author()).id.get();
     let mut list: String;
 
     let page_c: u16 = page.unwrap_or(1).max(1);
@@ -110,11 +112,11 @@ async fn list(
     {
         let mut characters = ctx.data().characters.lock().unwrap();
 
-        if !characters.contains_key(&author) {
-            characters.insert(author, HashMap::new());
+        if !characters.contains_key(&target) {
+            characters.insert(target, HashMap::new());
         };
 
-        let cl = characters.get_mut(&author).unwrap();
+        let cl = characters.get_mut(&target).unwrap();
 
         if cl.len() == 0 {
             list = "YOU HAVE NO CHARACTERS".to_string();
