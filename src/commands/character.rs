@@ -62,10 +62,10 @@ async fn new(
 
         // Existence checks
         if !characters.contains_key(&author) {
-            characters.insert(author, HashMap::new())
+            characters.insert(author, HashMap::new());
         };
 
-        let cl = characters.get_mut(&author).unwrap()
+        let cl = characters.get_mut(&author).unwrap();
 
         valid = cl.contains_key(&iden_c);
         if valid {break 'get;}
