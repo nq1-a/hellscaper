@@ -6,9 +6,31 @@ use poise::serenity_prelude::CreateMessage;
 use crate::{Context, Error};
 
 #[poise::command(slash_command, subcommands(
-    "quicktime"
+    "timer",
+    "quicktime",
 ))]
 pub async fn game(_ctx: Context<'_>) -> Result<(), Error> {Ok(())}
+
+#[poise::command(
+    slash_command,
+    description_localized("en-US", "Start a basic timer")
+)]
+async fn timer(
+    ctx: Context<'_>,
+    #[description = "How long before the timer ends (in seconds)"]
+    time: u16,
+    prompt: Option<String>,
+) -> Result<(), Error> {
+    let anchor = ctx.say(format!(
+        "**TIMER STARTED**{}{}",
+        if prompt.is_some() {"\n"} else {""},
+        prompt.unwrap_or_default(),
+    )).await?;
+
+    sleep(Duration::from_secs(time as u64)).await;
+    anchor.message().await?.reply(ctx, "TIMER ENDED").await?;
+    Ok(())
+}
 
 #[poise::command(
     slash_command,
