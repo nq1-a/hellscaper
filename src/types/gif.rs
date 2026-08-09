@@ -8,6 +8,8 @@ pub enum Gif {
     rollslop,
     slopslop,
     stallslop,
+    #[name = "quicktimeslop"]
+    qtslop,
     walkslop,
 }
 
@@ -22,6 +24,7 @@ impl Gif {
             Self::rollslop  => "https://cdn.discordapp.com/attachments/1276346665887862918/1529589276344320110/caption.gif?ex=6a651f85&is=6a63ce05&hm=e9e420824324f3a6bd35d825ac2fbb4df0e74ae1153b2964e58f0f76f493340a&",
             Self::slopslop  => "https://cdn.discordapp.com/attachments/1276346665887862918/1508720536237379654/caption.gif?ex=6a1690fe&is=6a153f7e&hm=3f0e58183d486cdc8bd9d4c1f2e9b2986597fec30ce935205bf8456e0e81414f&",
             Self::stallslop => "https://cdn.discordapp.com/attachments/1447058975785877614/1447450392785850539/caption.gif?ex=6a0f37f9&is=6a0de679&hm=713f359ac320252689a239c64732bd3741127e1fec8333e8a91960c35fd14ad2&",
+            Self::qtslop    => "https://cdn.discordapp.com/attachments/1535109082204217466/1535111237141274624/caption.gif?ex=6a79363f&is=6a77e4bf&hm=ca1eaaf20d8ee1810982b6a0fa63b76c5f42ef8edf3ccd381ef5612a5bab5182&",
             Self::walkslop  => "https://media.discordapp.net/attachments/1443451488360988762/1443452496944304262/caption.gif?ex=6a0f2d25&is=6a0ddba5&hm=298a773384a2f81970691f8e0e2dee234577f246d67876378997b5191e5d6cc8&=&width=188&height=371",
         }
     }
