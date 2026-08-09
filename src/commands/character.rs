@@ -133,10 +133,11 @@ async fn list(
                 if i >= page_s + 8 {break;}
 
                 if i >= page_s {
-                    list = format!("{}**{}** ({})\n{}\n\n",
+                    list = format!("{}**{}** ({}){}\n{}\n\n",
                         list,
                         v.name,
                         k,
+                        if v.stats.sum() > 2 {"\nOVERRIDE"} else {""},
                         v.stats,
                     );
                 }
