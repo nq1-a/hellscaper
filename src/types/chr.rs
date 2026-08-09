@@ -28,7 +28,7 @@ impl Stats {
             strength,
         };
 
-        if stats.sum() > 2 || max_override {
+        if stats.sum() > 2 && !max_override {
             return Err("STAT SUM IS GREATER THAN 2".to_string());
         }
 
