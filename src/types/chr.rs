@@ -18,6 +18,7 @@ impl Stats {
         intelligence: i32,
         resilience: i32,
         strength: i32,
+        max_override: bool
     ) -> Result<Stats, String> {
         let stats: Stats = Stats {
             agility,
@@ -27,7 +28,7 @@ impl Stats {
             strength,
         };
 
-        if stats.sum() > 2 {
+        if stats.sum() > 2 || max_override {
             return Err("STAT SUM IS GREATER THAN 2".to_string());
         }
 

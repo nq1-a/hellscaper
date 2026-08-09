@@ -32,6 +32,8 @@ async fn new(
     resilience: i32,
     #[description = "Greater muscle power"]
     strength: i32,
+    #[description = "Allows stats to add to greater than 2"]
+    max_override: Option<bool>,
 ) -> Result<(), Error> {
     let author: u64 = ctx.author().id.get();
 
@@ -42,6 +44,7 @@ async fn new(
         intelligence,
         resilience,
         strength,
+        max_override.unwrap_or(false),
     );
 
     if l_stats.is_err() {
