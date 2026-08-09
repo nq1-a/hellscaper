@@ -1,16 +1,24 @@
+use std::collections::HashMap;
+
 use rand::Rng;
 
 use crate::{Context, Error};
-use crate::types::traits::Bias;
-use crate::types::weapon::Weapon;
-use crate::types::wroll::WRoll;
+use crate::types::{
+    traits::Bias,
+    chr::{Character, Stats},
+    weapon::Weapon,
+    wroll::WRoll,
+};
 
 async fn wroll(
     ctx: Context<'_>,
     flags: String,
+    iden_c: String,
     mut flag_cons: impl FnMut(char, &mut i32, &mut i32) -> i32,
+    stat_cons: impl Fn(&Stats) -> i32,
     settings: WRoll<'_>,
 ) -> Result<(), Error> {
+    let author: u64 = ctx.author().id.get();
     let mut ad: i32 = 0;
     let mut n1_bar: i32 = 0;
 
@@ -19,6 +27,29 @@ async fn wroll(
 
     for c in flags.chars() {
         bar += flag_cons(c, &mut ad, &mut n1_bar);
+    }
+
+    // Update bar using stats
+    let valid: bool;
+
+    'sget: {
+        let mut characters = ctx.data().characters.lock().unwrap();
+
+        if !characters.contains_key(&author) {
+            characters.insert(author, HashMap::new());
+        };
+
+        let cl = characters.get(&author).unwrap();
+        let chr: Option<&Character> = cl.get(&iden_c);
+
+        valid = chr.is_some();
+        if !valid {break 'sget;}
+        bar -= stat_cons(&chr.unwrap().stats);
+    }
+
+    if !valid {
+        ctx.say("NO CHARACTER WITH THAT IDENTIFIER EXISTS").await?;
+        return Ok(());
     }
 
     // Get roll
@@ -34,7 +65,7 @@ async fn wroll(
 
     // Build message
     let mut res: String = String::new();
-    
+
     if !nat {
         res += &if roll >= bar {format!("**{}** -- {} ≥ {}", settings.succ_msg.to_uppercase(), roll, bar)}
                 else {format!("**{}** -- {} < {}", settings.fail_msg.to_uppercase(), roll, bar)};
@@ -87,6 +118,7 @@ async fn roll(
 )]
 pub async fn shoot(
     ctx: Context<'_>,
+    #[description = "The unique ID of your character"] character: String,
     #[description = "Your weapon"] weapon: Weapon,
     #[description = "List of modifiers to your attack"] flags: String,
 ) -> Result<(), Error> {
@@ -95,6 +127,7 @@ pub async fn shoot(
         flags
             + if weapon.auto() {"r"} else {""}
             + if weapon.experimental() {"E"} else {""},
+        character,
         |c, ad, n1_bar| match c {
             'A' => {*ad += 1; 0},
             'r' => {*n1_bar += 4; *ad += 1; 2},
@@ -115,6 +148,9 @@ pub async fn shoot(
             'f' =>  5,
             _   =>  0
         },
+        |stats| if weapon.aoe() {1} else {stats.agility / 2} +
+                stats.intelligence / 2 +
+                if weapon.innate() {stats.strength} else {0},
         WRoll {
             init_bar: 11 - weapon.bias(),
             crit_msg: "CRIT!",

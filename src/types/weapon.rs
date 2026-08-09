@@ -41,6 +41,15 @@ pub enum Weapon {
 }
 
 impl Weapon {
+    pub fn aoe(&self) -> bool {
+        match self {
+            Self::railgun       => true,
+            Self::spit          => true,
+            Self::thrown_expl   => true,
+            _                   => false
+        }
+    }
+
     pub fn auto(&self) -> bool {
         match self {
             Self::machine       => true,
@@ -55,6 +64,16 @@ impl Weapon {
             Self::pipe          => true,
             Self::railgun       => true,
             Self::zip           => true,
+            _                   => false
+        }
+    }
+
+    pub fn innate(&self) -> bool {
+        match self {
+            Self::bow           => true,
+            Self::crossbow      => true,
+            Self::slingshot     => true,
+            Self::spit          => true,
             _                   => false
         }
     }

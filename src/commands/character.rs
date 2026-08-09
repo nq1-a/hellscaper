@@ -114,7 +114,7 @@ async fn list(
 
         if !characters.contains_key(&target) {
             characters.insert(target, HashMap::new());
-        };
+        }
 
         let cl = characters.get_mut(&target).unwrap();
 
