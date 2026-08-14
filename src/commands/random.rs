@@ -82,6 +82,7 @@ async fn wroll(
 
 #[poise::command(slash_command, subcommands(
     "flip",
+    "learn",
     "roll",
     "shoot",
 ))]
@@ -158,6 +159,43 @@ pub async fn shoot(
             fail_msg: "MISS",
             fumb_msg: weapon.jam_msg(),
             tail_msg: &format!(", weapon: {:?}", weapon),
+        }
+    ).await;
+}
+
+#[poise::command(
+    slash_command,
+    description_localized("en-US", "Learn information")
+)]
+pub async fn learn(
+    ctx: Context<'_>,
+    #[description = "The unique ID of your character"] character: String,
+    #[description = "List of modifiers to your action"] flags: String,
+) -> Result<(), Error> {
+    return wroll(
+        ctx,
+        flags,
+        character,
+        |c, ad, _n1_bar| match c {
+            'A' => {*ad += 1; 0},
+            'n' => -4,
+            'g' => -3,
+            'e' => -2,
+            's' => -2,
+            'p' =>  2,
+            'd' =>  3,
+            't' =>  3,
+            'i' =>  5,
+            _   =>  0
+        },
+        |stats| stats.intelligence,
+        WRoll {
+            init_bar: 11,
+            crit_msg: "EUREKA!",
+            succ_msg: "LEARN",
+            fail_msg: "FAIL",
+            fumb_msg: "REGRESS",
+            tail_msg: "",
         }
     ).await;
 }
