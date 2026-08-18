@@ -142,7 +142,6 @@ pub async fn shoot(
             'd' => -3,
             's' => -3,
             'l' => -2,
-            'o' =>  0,
             'a' =>  1,
             'L' =>  3,
             'v' =>  3,
@@ -165,7 +164,7 @@ pub async fn shoot(
 
 #[poise::command(
     slash_command,
-    description_localized("en-US", "Learn information")
+    description_localized("en-US", "Try to learn information")
 )]
 pub async fn learn(
     ctx: Context<'_>,
@@ -192,9 +191,43 @@ pub async fn learn(
         WRoll {
             init_bar: 11,
             crit_msg: "EUREKA!",
-            succ_msg: "LEARN",
-            fail_msg: "FAIL",
-            fumb_msg: "REGRESS",
+            succ_msg: "LEARNED",
+            fail_msg: "FAILED",
+            fumb_msg: "REGRESSED",
+            tail_msg: "",
+        }
+    ).await;
+}
+
+#[poise::command(
+    slash_command,
+    description_localized("en-US", "Get caught in a blast")
+)]
+pub async fn blast(
+    ctx: Context<'_>,
+    #[description = "The unique ID of your character"] character: String,
+    #[description = "List of modifiers to your action"] flags: String,
+) -> Result<(), Error> {
+    return wroll(
+        ctx,
+        flags,
+        character,
+        |c, ad, n1_bar| match c {
+            'S' => {*ad += 1; 0},
+            'C' => {*n1_bar += 2; 0},
+            'f' => -5,
+            't' =>  3,
+            'n' =>  6,
+            _   =>  0
+        },
+        |stats| stats.agility / 3 +
+                stats.resilience,
+        WRoll {
+            init_bar: 9,
+            crit_msg: "UNSCATHED",
+            succ_msg: "SCATHED",
+            fail_msg: "HIT",
+            fumb_msg: "EVISCERATED",
             tail_msg: "",
         }
     ).await;
