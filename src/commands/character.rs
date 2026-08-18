@@ -18,7 +18,7 @@ pub async fn character(_ctx: Context<'_>) -> Result<(), Error> {Ok(())}
 )]
 async fn new(
     ctx: Context<'_>,
-    #[description = "A unique identifier (ideally 3 lowercase letters)"]
+    #[description = "A unique identifier (3 lowercase letters/special symbols)"]
     iden: String,
     #[description = "The character's name"]
     name: String,
@@ -35,6 +35,15 @@ async fn new(
     #[description = "Allows stats to add to greater than 2"]
     max_override: Option<bool>,
 ) -> Result<(), Error> {
+    // Make sure iden is valid
+    if iden.len() != 3 {
+        ctx.send(CreateReply::default()
+            .content("LENGTH OF IDENTIFIER MUST BE EXACTLY 3")
+            .ephemeral(true)
+        ).await?;
+    }
+
+    // Get the author's user ID
     let author: u64 = ctx.author().id.get();
 
     // Create stats
@@ -63,7 +72,7 @@ async fn new(
 
     'get: {
         let mut characters = ctx.data().characters.lock().unwrap();
-        let iden_c = iden.clone();
+        let iden_c = iden.to_lowercase();
 
         // Existence checks
         if !characters.contains_key(&author) {

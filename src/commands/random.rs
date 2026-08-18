@@ -41,7 +41,7 @@ async fn wroll(
         };
 
         let cl = characters.get(&author).unwrap();
-        let chr: Option<&Character> = cl.get(&iden_c);
+        let chr: Option<&Character> = cl.get(&iden_c.to_lowercase());
 
         valid = chr.is_some();
         if !valid {break 'sget;}
