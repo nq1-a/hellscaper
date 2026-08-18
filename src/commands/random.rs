@@ -31,6 +31,7 @@ async fn wroll(
 
     // Update bar using stats
     let valid: bool;
+    let mut chr_name: String = String::new();
 
     'sget: {
         let mut characters = ctx.data().characters.lock().unwrap();
@@ -44,7 +45,9 @@ async fn wroll(
 
         valid = chr.is_some();
         if !valid {break 'sget;}
-        bar -= stat_cons(&chr.unwrap().stats);
+        let chr_u: &Character = chr.unwrap();
+        bar -= stat_cons(&chr_u.stats);
+        chr_name = chr_u.name.clone();
     }
 
     if !valid {
@@ -75,7 +78,7 @@ async fn wroll(
         res += &format!("NAT {}", roll);
     }
 
-    res += &format!("\n-# flags: {}{}", flags, settings.tail_msg);
+    res += &format!("\n-# character: {}, flags: {}{}", chr_name.to_lowercase(), flags, settings.tail_msg);
     ctx.say(res).await?;
     Ok(())
 }
