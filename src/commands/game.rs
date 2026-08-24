@@ -19,7 +19,10 @@ async fn timer(
     ctx: Context<'_>,
     #[description = "How long before the timer ends (in seconds)"]
     time: u16,
+    #[description = "Something to say when the timer starts"]
     prompt: Option<String>,
+    #[description = "Something to say when the timer ends"]
+    end_msg: Option<String>,
 ) -> Result<(), Error> {
     let anchor = ctx.say(format!(
         "**TIMER STARTED**{}{}",
@@ -28,7 +31,11 @@ async fn timer(
     )).await?;
 
     sleep(Duration::from_secs(time as u64)).await;
-    anchor.message().await?.reply(ctx, "TIMER ENDED").await?;
+    anchor.message().await?.reply(ctx, format!(
+        "**TIMER ENDED**{}{}",
+        if end_msg.is_some() {"\n"} else {""},
+        end_msg.unwrap_or_default(),
+    )).await?;
     Ok(())
 }
 
