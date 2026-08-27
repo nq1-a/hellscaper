@@ -1,8 +1,52 @@
 use crate::types::traits::Bias;
 
 #[allow(non_camel_case_types)]
+#[derive(Debug, poise::ChoiceParameter)]
+pub enum MeleeWeapon {
+    axe,
+    battleaxe,
+    #[name = "blunt misc."]
+    blunt_misc,
+    #[name = "double flail"]
+    flail_d,
+    #[name = "single flail"]
+    flail_s,
+    greatsword,
+    hands,
+    hatchet,
+    knife,
+    longsword,
+    machete,
+    polearm,
+    #[name = "sharp misc."]
+    sharp_misc,
+    shortsword,
+}
+
+impl Bias for MeleeWeapon {
+    fn bias(&self) -> i32 {
+        match self {
+            Self::hands      => -4,
+            Self::knife      => -3,
+            Self::machete    => -2,
+            Self::hatchet    =>  0,
+            Self::blunt_misc =>  1,
+            Self::flail_s    =>  1,
+            Self::sharp_misc =>  1,
+            Self::shortsword =>  1,
+            Self::axe        =>  2,
+            Self::flail_d    =>  2,
+            Self::longsword  =>  2,
+            Self::polearm    =>  2,
+            Self::battleaxe  =>  3,
+            Self::greatsword =>  4,
+        }
+    }
+}
+
+#[allow(non_camel_case_types)]
 #[derive(Debug, PartialEq, poise::ChoiceParameter)]
-pub enum Weapon {
+pub enum RangedWeapon {
     bow,
     crossbow,
     #[name = "machine gun"]
@@ -40,7 +84,7 @@ pub enum Weapon {
     server_ban,
 }
 
-impl Weapon {
+impl RangedWeapon {
     pub fn aoe(&self) -> bool {
         match self {
             Self::railgun       => true,
@@ -104,7 +148,7 @@ impl Weapon {
     }
 }
 
-impl Bias for Weapon {
+impl Bias for RangedWeapon {
     fn bias(&self) -> i32 {
         match self {
             Self::derringer     => -4,

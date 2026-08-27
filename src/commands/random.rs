@@ -6,7 +6,7 @@ use crate::{Context, Error};
 use crate::types::{
     traits::Bias,
     chr::{Character, Stats},
-    weapon::Weapon,
+    weapon::{MeleeWeapon, RangedWeapon},
     wroll::WRoll,
 };
 
@@ -14,19 +14,20 @@ async fn wroll(
     ctx: Context<'_>,
     flags: String,
     iden_c: String,
-    mut flag_cons: impl FnMut(char, &mut i32, &mut i32) -> i32,
+    mut flag_cons: impl FnMut(char, &mut i32, &mut i32, &mut i32) -> i32,
     stat_cons: impl Fn(&Stats) -> i32,
     settings: WRoll<'_>,
 ) -> Result<(), Error> {
     let author: u64 = ctx.author().id.get();
     let mut ad: i32 = 0;
-    let mut n1_bar: i32 = 0;
+    let mut aux_bias: i32 = 0;
+    let mut n1_bar: i32 = settings.n1_bar_d;
 
     // Get bar
     let mut bar: i32 = settings.init_bar;
 
     for c in flags.chars() {
-        bar += flag_cons(c, &mut ad, &mut n1_bar);
+        bar += flag_cons(c, &mut ad, &mut n1_bar, &mut aux_bias);
     }
 
     // Update bar using stats
@@ -60,7 +61,9 @@ async fn wroll(
         .map(|_| rand::thread_rng().gen_range(1..21))
         .collect();
 
-    let roll: i32 = if ad >= 0 {*rolls.iter().max().unwrap()} else {*rolls.iter().min().unwrap()};
+    let roll: i32 = if ad >= 0 {*rolls.iter().max().unwrap()} else {*rolls.iter().min().unwrap()}
+                    + settings.pre_bias
+                    + aux_bias;
 
     // NAT
     let nat_min: bool = roll <= 1 + n1_bar;
@@ -84,6 +87,8 @@ async fn wroll(
 }
 
 #[poise::command(slash_command, subcommands(
+    "blast",
+    "clash",
     "flip",
     "learn",
     "roll",
@@ -123,7 +128,7 @@ async fn roll(
 pub async fn shoot(
     ctx: Context<'_>,
     #[description = "The unique ID of your character"] character: String,
-    #[description = "Your weapon"] weapon: Weapon,
+    #[description = "Your weapon"] weapon: RangedWeapon,
     #[description = "List of modifiers to your attack"] flags: String,
 ) -> Result<(), Error> {
     return wroll(
@@ -132,7 +137,7 @@ pub async fn shoot(
             + if weapon.auto() {"r"} else {""}
             + if weapon.experimental() {"E"} else {""},
         character,
-        |c, ad, n1_bar| match c {
+        |c, ad, n1_bar, _| match c {
             'A' => {*ad += 1; 0},
             'r' => {*n1_bar += 4; *ad += 1; 2},
             'E' => {*n1_bar = 1.max(*n1_bar * 2); 0},
@@ -161,6 +166,8 @@ pub async fn shoot(
             fail_msg: "MISS",
             fumb_msg: weapon.jam_msg(),
             tail_msg: &format!(", weapon: {:?}", weapon),
+            pre_bias: 0,
+            n1_bar_d: 0,
         }
     ).await;
 }
@@ -178,8 +185,9 @@ pub async fn learn(
         ctx,
         flags,
         character,
-        |c, ad, _n1_bar| match c {
+        |c, ad, _n1_bar, _| match c {
             'A' => {*ad += 1; 0},
+            'D' => {*ad -= 1; 0},
             'n' => -4,
             'g' => -3,
             'e' => -2,
@@ -192,12 +200,14 @@ pub async fn learn(
         },
         |stats| stats.intelligence,
         WRoll {
-            init_bar: 11,
+            init_bar: 10,
             crit_msg: "EUREKA!",
             succ_msg: "LEARNED",
             fail_msg: "FAILED",
             fumb_msg: "REGRESSED",
             tail_msg: "",
+            pre_bias: 0,
+            n1_bar_d: 0,
         }
     ).await;
 }
@@ -206,7 +216,7 @@ pub async fn learn(
     slash_command,
     description_localized("en-US", "Get caught in a blast")
 )]
-pub async fn blast(
+async fn blast(
     ctx: Context<'_>,
     #[description = "The unique ID of your character"] character: String,
     #[description = "List of modifiers to your action"] flags: String,
@@ -215,8 +225,10 @@ pub async fn blast(
         ctx,
         flags,
         character,
-        |c, ad, n1_bar| match c {
+        |c, ad, n1_bar, _| match c {
+            'A' => {*ad += 1; 0},
             'S' => {*ad += 1; 0},
+            'D' => {*ad -= 1; 0},
             'C' => {*n1_bar += 2; 0},
             'f' => -5,
             't' =>  3,
@@ -232,6 +244,46 @@ pub async fn blast(
             fail_msg: "HIT",
             fumb_msg: "EVISCERATED",
             tail_msg: "",
+            pre_bias: 0,
+            n1_bar_d: 0,
+        }
+    ).await;
+}
+
+#[poise::command(
+    slash_command,
+    description_localized("en-US", "Clash against someone melee-to-melee")
+)]
+pub async fn clash(
+    ctx: Context<'_>,
+    #[description = "The unique ID of your character"] character: String,
+    #[description = "Your weapon"] weapon: MeleeWeapon,
+    #[description = "List of modifiers to your attack"] flags: String,
+) -> Result<(), Error> {
+    return wroll(
+        ctx,
+        flags,
+        character,
+        |c, ad, n1_bar, aux_bias| match c {
+            'A' => {*ad += 1; 0},
+            'D' => {*ad -= 1; 0},
+            'd' => {*n1_bar += 3; *aux_bias += 1; 0},
+            'r' => -2,
+            't' =>  3,
+            'i' =>  4,
+            _   =>  0
+        },
+        |stats| stats.agility / 2 +
+                stats.strength,
+        WRoll {
+            init_bar: 13,
+            crit_msg: "CRIT!",
+            succ_msg: "VANTAGE",
+            fail_msg: "COUNTER",
+            fumb_msg: "FUMBLE",
+            tail_msg: &format!(", weapon: {:?}", weapon),
+            pre_bias: weapon.bias(),
+            n1_bar_d: 2,
         }
     ).await;
 }

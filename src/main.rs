@@ -125,6 +125,7 @@ async fn main() {
                 commands::game::game(),
                 commands::level::level(),
                 commands::party::party(),
+                commands::random::clash(),
                 commands::random::random(),
                 commands::random::shoot(),
                 commands::util::gif(),
