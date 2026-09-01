@@ -138,6 +138,7 @@ pub async fn shoot(
             + if weapon.experimental() {"E"} else {""},
         character,
         |c, ad, n1_bar, _| match c {
+            'T' => {*ad += 1023; 0},
             'A' => {*ad += 1; 0},
             'r' => {*n1_bar += 4; *ad += 1; 2},
             'E' => {*n1_bar = 1.max(*n1_bar * 2); 0},
