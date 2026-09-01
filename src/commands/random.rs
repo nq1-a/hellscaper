@@ -26,7 +26,7 @@ async fn wroll(
     // Get bar
     let mut bar: i32 = settings.init_bar;
 
-    for c in flags.chars() {
+    for c in flags.clone().chars() {
         bar += flag_cons(c, &mut ad, &mut n1_bar, &mut aux_bias);
     }
 
@@ -81,6 +81,7 @@ async fn wroll(
         res += &format!("NAT {}", roll);
     }
 
+    if flags.contains('V') {res += "\n-# there is no V flag";}
     res += &format!("\n-# character: {}, flags: {}{}", chr_name.to_lowercase(), flags, settings.tail_msg);
     ctx.say(res).await?;
     Ok(())
@@ -169,11 +170,7 @@ pub async fn shoot(
             succ_msg: "HIT",
             fail_msg: "MISS",
             fumb_msg: weapon.jam_msg(),
-            tail_msg: &format!(
-                ", weapon: {:?}{}",
-                weapon,
-                if flags.contains('V') {"\nthere is no V flag"} else {""},
-            ),
+            tail_msg: &format!(", weapon: {:?}", weapon),
             pre_bias: 0,
             n1_bar_d: 0,
         }
