@@ -146,6 +146,7 @@ pub async fn shoot(
             'b' => {*ad -= 1; 0},
             'B' => {*ad -= 1; 0},
             'D' => {*ad -= 1; 0},
+            'U' => {*ad -= 1023; 0},
             'e' => -4,
             'n' => -4,
             'd' => -3,
@@ -168,7 +169,11 @@ pub async fn shoot(
             succ_msg: "HIT",
             fail_msg: "MISS",
             fumb_msg: weapon.jam_msg(),
-            tail_msg: &format!(", weapon: {:?}", weapon),
+            tail_msg: &format!(
+                ", weapon: {:?}{}",
+                weapon,
+                if flags.contains('V') {"\nthere is no V flag"} else {""},
+            ),
             pre_bias: 0,
             n1_bar_d: 0,
         }
