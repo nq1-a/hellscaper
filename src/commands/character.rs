@@ -138,8 +138,14 @@ async fn list(
             list = format!("# PAGE {}/{}\n", page_c, (cl.len() - 1) / 8 + 1);
             let mut i: u16 = 0;
 
-            for (k, v) in cl.iter() {
+            let mut keys: Vec<_> = cl.keys()
+                .clone()
+                .collect::<Vec<_>>();
+            keys.sort();
+
+            for k in keys {
                 if i >= page_s + 8 {break;}
+                let v = cl.get(k.as_str()).unwrap();
 
                 if i >= page_s {
                     list = format!("{}**{}** ({}){}\n{}\n\n",
