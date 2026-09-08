@@ -15,7 +15,7 @@ pub async fn character(_ctx: Context<'_>) -> Result<(), Error> {Ok(())}
 
 #[poise::command(
     slash_command,
-    description_localized("en-US", "Create a new character")
+    description_localized("en-US", "Create a character")
 )]
 async fn new(
     ctx: Context<'_>,
@@ -35,6 +35,8 @@ async fn new(
     strength: i32,
     #[description = "Allows stats to add to greater than 2"]
     max_override: Option<bool>,
+    #[description = "Can override an existing character's stats if true"]
+    allow_edit: Option<bool>,
 ) -> Result<(), Error> {
     // Make sure iden is valid
     if iden.len() != 3 {
@@ -54,7 +56,7 @@ async fn new(
         intelligence,
         resilience,
         strength,
-        max_override.unwrap_or(false),
+        max_override.unwrap_or_default(),
     );
 
     if l_stats.is_err() {
@@ -83,6 +85,19 @@ async fn new(
         let cl = characters.get_mut(&author).unwrap();
 
         valid = cl.contains_key(&iden_c);
+        let editing: bool = allow_edit.unwrap_or_default();
+
+        // Edit a character if it already exists
+        if valid && editing {
+            if let Some(c) = cl.get_mut(iden_c.as_str()) {
+                c.stats.agility = agility;
+                c.stats.charisma = charisma;
+                c.stats.intelligence = intelligence;
+                c.stats.resilience = resilience;
+                c.stats.strength = strength;
+            }
+        }
+
         if valid {break 'get;}
 
         // New character insertion
