@@ -9,6 +9,7 @@ use crate::types::chr::{Character, Stats};
 #[poise::command(slash_command, subcommands(
     "new",
     "list",
+    "view",
 ))]
 pub async fn character(_ctx: Context<'_>) -> Result<(), Error> {Ok(())}
 
@@ -107,7 +108,52 @@ async fn new(
 
 #[poise::command(
     slash_command,
-    description_localized("en-US", "List existing campaigns")
+    description_localized("en-US", "Show an existing character")
+)]
+async fn view(
+    ctx: Context<'_>,
+    #[description = "The character's identifier"]
+    iden: String,
+    #[description = "Whose character it is"]
+    user: Option<User>,
+) -> Result<(), Error> {
+    let target: u64 = user.as_ref().unwrap_or_else(|| ctx.author()).id.get();
+    let view: String;
+
+    {
+        let mut characters = ctx.data().characters.lock().unwrap();
+
+        if !characters.contains_key(&target) {
+            characters.insert(target, HashMap::new());
+        }
+
+        let cl = characters.get_mut(&target).unwrap();
+
+        if cl.len() == 0 {
+            view = "TARGET HAS NO CHARACTERS".to_string();
+        } else if let Some(c) = cl.get(iden.as_str()) {
+            view = format!("**{}** ({}){}\n{}\n\n",
+                c.name,
+                iden,
+                if c.stats.sum() > 2 {"\nOVERRIDE"} else {""},
+                c.stats,
+            );
+        } else {
+            view = "CHARACTER NOT FOUND".to_string();
+        }
+    }
+
+    ctx.send(CreateReply::default()
+        .content(view)
+        .ephemeral(true)
+    ).await?;
+
+    Ok(())
+}
+
+#[poise::command(
+    slash_command,
+    description_localized("en-US", "List existing characters")
 )]
 async fn list(
     ctx: Context<'_>,
@@ -131,7 +177,7 @@ async fn list(
         let cl = characters.get_mut(&target).unwrap();
 
         if cl.len() == 0 {
-            list = "YOU HAVE NO CHARACTERS".to_string();
+            list = "TARGET HAS NO CHARACTERS".to_string();
         } else if cl.len() as u16 <= page_s {
             list = "NO CHARACTERS FOUND ON THIS PAGE".to_string();
         } else {
