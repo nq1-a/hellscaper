@@ -163,7 +163,8 @@ pub async fn shoot(
         },
         |stats| if weapon.aoe() {1} else {stats.agility / 2} +
                 stats.intelligence / 2 +
-                if weapon.innate() {stats.strength} else {0},
+                if weapon.innate() {stats.strength} else {0} +
+                stats.skills.aim,
         WRoll {
             init_bar: 11 - weapon.bias(),
             crit_msg: "CRIT!",

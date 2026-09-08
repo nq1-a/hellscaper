@@ -2,6 +2,11 @@ use std::fmt;
 
 use serde::{Serialize, Deserialize};
 
+#[derive(Debug, Default, Serialize, Deserialize)]
+pub struct Skills {
+    pub aim: i32,
+}
+
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Stats {
     pub agility: i32,
@@ -9,6 +14,8 @@ pub struct Stats {
     pub intelligence: i32,
     pub resilience: i32,
     pub strength: i32,
+    #[serde(default)]
+    pub skills: Skills,
 }
 
 impl Stats {
@@ -26,6 +33,7 @@ impl Stats {
             intelligence,
             resilience,
             strength,
+            skills: Default::default(),
         };
 
         if stats.sum() > 2 && !max_override {
