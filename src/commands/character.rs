@@ -4,8 +4,10 @@ use poise::CreateReply;
 use poise::serenity_prelude::User;
 
 use crate::{Context, Error};
-use crate::types::chr::{Character, Stats};
-use crate::types::data::Data;
+use crate::types::{
+    chr::{Character, Stats},
+    data::Data,
+};
 
 pub fn get_char(
     data: &Data,

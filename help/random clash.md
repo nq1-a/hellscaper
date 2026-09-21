@@ -1,6 +1,7 @@
 # random clash
 Used for determining the result of a melee clash
 Based on a D20 roll with a vantage DC of 13
+1/50 chance for +1 dexterity
 
 Vantage vaguely gives you the ability to follow through on your attack.
 Unlike **/random shoot**, weapons directly influence the roll value rather than the DC (though flags still mainly affect the vantage DC).

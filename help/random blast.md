@@ -1,6 +1,7 @@
 # random blast
 Used for determining the outcome of being caught in a blast
 Based on a D20 roll with a default DC of 9
+1/40 chance for +1 elusion
 
 +/- raise/lower your DC respectively (so + is actually detrimental).
 Advantage and disadvantage make you roll more times. Under advantage, you take the highest roll; under disadvantage, you take the lowest.
