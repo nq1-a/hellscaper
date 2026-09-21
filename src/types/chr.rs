@@ -4,7 +4,8 @@ use serde::{Serialize, Deserialize};
 
 #[derive(Debug, Default, Serialize, Deserialize)]
 pub struct Skills {
-    pub aim: i32,
+    pub dexterity: i32,
+    pub elusion: i32,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
