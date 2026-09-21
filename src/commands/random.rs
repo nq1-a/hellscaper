@@ -281,7 +281,8 @@ pub async fn clash(
             _   =>  0
         },
         |stats| stats.agility / 2 +
-                stats.strength,
+                stats.strength +
+                stats.skills.dexterity / 2,
         WRoll {
             init_bar: 13,
             crit_msg: "CRIT!",
