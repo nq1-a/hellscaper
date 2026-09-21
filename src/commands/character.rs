@@ -7,7 +7,11 @@ use crate::{Context, Error};
 use crate::types::chr::{Character, Stats};
 use crate::types::data::Data;
 
-pub fn get_char(data: &Data, user: u64, iden: String) -> Option<Character> {
+pub fn get_char(
+    data: &Data,
+    user: u64,
+    iden: String,
+) -> Option<Character> {
     let mut characters = data.characters.lock().unwrap();
 
     if !characters.contains_key(&user) {
@@ -17,6 +21,22 @@ pub fn get_char(data: &Data, user: u64, iden: String) -> Option<Character> {
     let cl = characters.get_mut(&user).unwrap();
     if let Some(c) = cl.get(&iden) {return Some(c.clone());}
     else                           {return None;}
+}
+
+pub fn upd_char(
+    data: &Data,
+    user: u64,
+    iden: String,
+    mut f: impl FnMut(&mut Character) -> (),
+) {
+    let mut characters = data.characters.lock().unwrap();
+
+    if !characters.contains_key(&user) {
+        characters.insert(user, HashMap::new());
+    };
+
+    let cl = characters.get_mut(&user).unwrap();
+    if let Some(c) = cl.get_mut(&iden) {f(c);}
 }
 
 #[poise::command(slash_command, subcommands(
@@ -148,21 +168,16 @@ async fn view(
     user: Option<User>,
 ) -> Result<(), Error> {
     let target: u64 = user.as_ref().unwrap_or_else(|| ctx.author()).id.get();
-    let view: String;
 
-    {
-        if let Some(c) = get_char(&ctx.data(), target, iden.clone()) {
-            view = format!("**{}** ({}){}\n\n{}\n\n{}",
-                c.name,
-                iden,
-                if c.stats.sum() > 2 {"\nOVERRIDE"} else {""},
-                c.stats,
-                c.stats.skills,
-            );
-        } else {
-            view = "CHARACTER NOT FOUND".to_string();
-        }
-    }
+    let view: String = if let Some(c) = get_char(&ctx.data(), target, iden.clone()) {
+        format!("**{}** ({}){}\n\n{}\n\n{}",
+            c.name,
+            iden,
+            if c.stats.sum() > 2 {"\nOVERRIDE"} else {""},
+            c.stats,
+            c.stats.skills,
+        )
+    } else {"CHARACTER NOT FOUND".to_string()};
 
     ctx.send(CreateReply::default()
         .content(view)
