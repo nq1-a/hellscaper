@@ -44,6 +44,8 @@ async fn new(
             .content("LENGTH OF IDENTIFIER MUST BE EXACTLY 3")
             .ephemeral(true)
         ).await?;
+
+        return Ok(());
     }
 
     // Get the author's user ID
