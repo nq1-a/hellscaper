@@ -1,4 +1,5 @@
 use std::fmt;
+use std::fmt::{Display, Formatter};
 
 use serde::{Serialize, Deserialize};
 
@@ -65,8 +66,19 @@ impl Stats {
     }
 }
 
-impl fmt::Display for Stats {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+impl Display for Skills {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        write!(
+            f,
+            "DEX: {}\nELU: {}",
+            self.dexterity,
+            self.elusion,
+        )
+    }
+}
+
+impl Display for Stats {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         write!(
             f,
             "AG: {}\nCH: {}\nIN: {}\nRE: {}\nST: {}",

@@ -149,11 +149,12 @@ async fn view(
         if cl.len() == 0 {
             view = "TARGET HAS NO CHARACTERS".to_string();
         } else if let Some(c) = cl.get(iden.as_str()) {
-            view = format!("**{}** ({}){}\n{}\n\n",
+            view = format!("**{}** ({}){}\n\n{}\n\n{}",
                 c.name,
                 iden,
                 if c.stats.sum() > 2 {"\nOVERRIDE"} else {""},
                 c.stats,
+                c.stats.skills,
             );
         } else {
             view = "CHARACTER NOT FOUND".to_string();
