@@ -3,13 +3,13 @@ use std::fmt::{Display, Formatter};
 
 use serde::{Serialize, Deserialize};
 
-#[derive(Debug, Default, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct Skills {
     pub dexterity: i32,
     pub elusion: i32,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Stats {
     pub agility: i32,
     pub charisma: i32,
@@ -91,7 +91,7 @@ impl Display for Stats {
     }
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Clone, Serialize, Deserialize)]
 pub struct Character {
     pub name: String,
     pub stats: Stats,

@@ -1,8 +1,7 @@
-use std::collections::HashMap;
-
 use rand::Rng;
 
 use crate::{Context, Error};
+use crate::commands::character::get_char;
 use crate::types::{
     traits::Bias,
     chr::{Character, Stats},
@@ -31,22 +30,12 @@ async fn wroll(
     }
 
     // Update bar using stats
-    let valid: bool;
+    let mut valid: bool = false;
     let mut chr_name: String = String::new();
 
-    'sget: {
-        let mut characters = ctx.data().characters.lock().unwrap();
-
-        if !characters.contains_key(&author) {
-            characters.insert(author, HashMap::new());
-        };
-
-        let cl = characters.get(&author).unwrap();
-        let chr: Option<&Character> = cl.get(&iden_c.to_lowercase());
-
-        valid = chr.is_some();
-        if !valid {break 'sget;}
-        let chr_u: &Character = chr.unwrap();
+    if let Some(chr) = get_char(&ctx.data(), author, iden_c.to_lowercase()) {
+        valid = true;
+        let chr_u: Character = chr;
         bar -= stat_cons(&chr_u.stats);
         chr_name = chr_u.name.clone();
     }

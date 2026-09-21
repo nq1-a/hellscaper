@@ -5,6 +5,19 @@ use poise::serenity_prelude::User;
 
 use crate::{Context, Error};
 use crate::types::chr::{Character, Stats};
+use crate::types::data::Data;
+
+pub fn get_char(data: &Data, user: u64, iden: String) -> Option<Character> {
+    let mut characters = data.characters.lock().unwrap();
+
+    if !characters.contains_key(&user) {
+        characters.insert(user, HashMap::new());
+    };
+
+    let cl = characters.get_mut(&user).unwrap();
+    if let Some(c) = cl.get(&iden) {return Some(c.clone());}
+    else                           {return None;}
+}
 
 #[poise::command(slash_command, subcommands(
     "new",
@@ -138,17 +151,7 @@ async fn view(
     let view: String;
 
     {
-        let mut characters = ctx.data().characters.lock().unwrap();
-
-        if !characters.contains_key(&target) {
-            characters.insert(target, HashMap::new());
-        }
-
-        let cl = characters.get_mut(&target).unwrap();
-
-        if cl.len() == 0 {
-            view = "TARGET HAS NO CHARACTERS".to_string();
-        } else if let Some(c) = cl.get(iden.as_str()) {
+        if let Some(c) = get_char(&ctx.data(), target, iden.clone()) {
             view = format!("**{}** ({}){}\n\n{}\n\n{}",
                 c.name,
                 iden,
