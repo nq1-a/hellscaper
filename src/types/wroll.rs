@@ -8,5 +8,4 @@ pub struct WRoll<'a> {
     pub tail_msg: &'a str,
     pub pre_bias: i32,
     pub n1_bar_d: i32,
-    pub skill_bc: u32,
 }

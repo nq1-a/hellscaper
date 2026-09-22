@@ -1,7 +1,6 @@
 # random shoot
 Used for determining the result of a ranged attack
 Based on a D20 roll with a default DC of 11
-1/60 chance for +1 dexterity
 
 +/- raise/lower your DC respectively (so + is actually detrimental).
 Advantage and disadvantage make you roll more times. Under advantage, you take the highest roll; under disadvantage, you take the lowest.

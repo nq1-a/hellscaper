@@ -4,7 +4,7 @@ use crate::{Context, Error};
 use crate::commands::character::get_char;
 use crate::types::{
     traits::Bias,
-    chr::{Character, Skills, Stats},
+    chr::{Character, Stats},
     weapon::{MeleeWeapon, RangedWeapon},
     wroll::WRoll,
 };
@@ -17,8 +17,6 @@ async fn wroll(
     mut flag_cons: impl FnMut(char, &mut i32, &mut i32, &mut i32) -> i32,
     // Conditions for stats
     stat_cons: impl Fn(&Stats) -> i32,
-    // Skill growth
-    mut crit_cons: impl FnMut(&mut Skills) -> (),
     // Constant settings
     settings: WRoll<'_>,
 ) -> Result<(), Error> {
@@ -40,10 +38,8 @@ async fn wroll(
 
     if let Some(chr) = get_char(&ctx.data(), author, iden_c.to_lowercase()) {
         valid = true;
-        let mut chr_u: Character = chr;
+        let chr_u: Character = chr;
         bar -= stat_cons(&chr_u.stats);
-        if settings.skill_bc != 0 && rand::thread_rng().gen_range(1..=settings.skill_bc) == 1
-            {crit_cons(&mut chr_u.stats.skills);}
         chr_name = chr_u.name.clone();
     }
 
@@ -163,7 +159,6 @@ pub async fn shoot(
                 stats.intelligence / 2 +
                 if weapon.innate() {stats.strength} else {0} +
                 stats.skills.dexterity,
-        |skills| skills.dexterity += 1,
         WRoll {
             init_bar: 11 - weapon.bias(),
             crit_msg: "CRIT!",
@@ -173,7 +168,6 @@ pub async fn shoot(
             tail_msg: &format!(", weapon: {:?}", weapon),
             pre_bias: 0,
             n1_bar_d: 0,
-            skill_bc: 60,
         }
     ).await;
 }
@@ -205,7 +199,6 @@ pub async fn learn(
             _   =>  0
         },
         |stats| stats.intelligence,
-        |_| {},
         WRoll {
             init_bar: 10,
             crit_msg: "EUREKA!",
@@ -215,7 +208,6 @@ pub async fn learn(
             tail_msg: "",
             pre_bias: 0,
             n1_bar_d: 0,
-            skill_bc: 0,
         }
     ).await;
 }
@@ -246,7 +238,6 @@ async fn blast(
         |stats| stats.agility / 3 +
                 stats.resilience +
                 stats.skills.elusion,
-        |skills| skills.elusion += 1,
         WRoll {
             init_bar: 9,
             crit_msg: "UNSCATHED",
@@ -256,7 +247,6 @@ async fn blast(
             tail_msg: "",
             pre_bias: 0,
             n1_bar_d: 0,
-            skill_bc: 40,
         }
     ).await;
 }
@@ -287,7 +277,6 @@ pub async fn clash(
         |stats| stats.agility / 2 +
                 stats.strength +
                 stats.skills.dexterity / 2,
-        |skills| skills.dexterity += 1,
         WRoll {
             init_bar: 13,
             crit_msg: "CRIT!",
@@ -297,7 +286,6 @@ pub async fn clash(
             tail_msg: &format!(", weapon: {:?}", weapon),
             pre_bias: weapon.bias(),
             n1_bar_d: 2,
-            skill_bc: 50,
         }
     ).await;
 }
