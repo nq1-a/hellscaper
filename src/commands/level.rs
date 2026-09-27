@@ -29,10 +29,11 @@ pub fn lvl_points(pts: u64) -> u64 {
     let fpts: f64 = pts as f64;
     (((fpts + 25.) / 4.5).log(2.2) + fpts / (1000. + fpts / 100.) - 1.)
     .max(1.) as u64
-} 
+}
 
 #[poise::command(slash_command, subcommands(
     "view",
+    "give",
     "leaderboard",
     "vanitynew",
     "vanityequip",
@@ -63,6 +64,45 @@ async fn view(
 
 #[poise::command(
     slash_command,
+    description_localized("en-US", "Give someone your points")
+)]
+async fn give(
+    ctx: Context<'_>,
+    #[description = "The amount of points you want to give"]
+    amount: u64,
+    #[description = "Who you want to give them to"]
+    user: User,
+) -> Result<(), Error> {
+    if amount < 10 {
+        ctx.send(CreateReply::default()
+            .content("MUST GIVE AT LEAST 10 POINTS")
+            .ephemeral(true)
+        ).await?;
+    }
+
+    let author = ctx.author().id.get();
+    let target = user.id.get();
+
+    if get_points(&ctx.data(), author) < amount {
+        ctx.send(CreateReply::default()
+            .content("YOU DO NOT HAVE ENOUGH POINTS")
+            .ephemeral(true)
+        ).await?;
+    }
+
+    dec_points(&ctx.data(), author, amount);
+    add_points(&ctx.data(), target, amount);
+
+    ctx.send(CreateReply::default()
+        .content("POINTS GIVEN")
+        .ephemeral(true)
+    ).await?;
+
+    Ok(())
+}
+
+#[poise::command(
+    slash_command,
     description_localized("en-US", "See everyone's ranked scores")
 )]
 async fn leaderboard(ctx: Context<'_>) -> Result<(), Error> {
@@ -77,7 +117,7 @@ async fn leaderboard(ctx: Context<'_>) -> Result<(), Error> {
             .collect::<Vec<_>>()
             .clone();
     }
-    
+
     // Check to see if we actually need to do anything
     if board.len() == 0 {
         ctx.send(CreateReply::default()
@@ -238,7 +278,7 @@ async fn vanitylist(ctx: Context<'_>) -> Result<(), Error> {
             .collect::<Vec<_>>()
             .clone();
     }
-    
+
     // Check to see if we actually need to do anything
     if board.len() == 0 {
         ctx.send(CreateReply::default()
