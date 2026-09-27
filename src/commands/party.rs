@@ -10,6 +10,7 @@ use poise::serenity_prelude::{
 
 use crate::{Context, Error};
 use crate::commands::level::{get_points, lvl_points};
+use crate::core::say_eph;
 use crate::types::arc::Campaign;
 
 #[poise::command(slash_command, subcommands(
@@ -33,19 +34,12 @@ async fn new(
 ) -> Result<(), Error> {
     let author: u64 = ctx.author().id.get();
     if lvl_points(get_points(&ctx.data(), author)) < 5 {
-        ctx.send(CreateReply::default()
-            .content("MUST BE AT LEAST LEVEL 5 TO CREATE A PARTY")
-        ).await?;
-
+        say_eph(&ctx, "MUST BE AT LEAST LEVEL 5 TO CREATE A PARTY").await?;
         return Ok(());
     }
 
     if name.chars().count() > 48 {
-        ctx.send(CreateReply::default()
-            .content("NAME IS TOO LONG")
-            .ephemeral(true)
-        ).await?;
-
+        say_eph(&ctx, "NAME IS TOO LONG").await?;
         return Ok(());
     }
 
@@ -70,10 +64,7 @@ async fn new(
             &name)
         ).await?;
     } else {
-        ctx.send(CreateReply::default()
-            .content("A CAMPAIGN WITH THAT NAME ALREADY EXISTS")
-            .ephemeral(true)
-        ).await?;
+        say_eph(&ctx, "A CAMPAIGN WITH THAT NAME ALREADY EXISTS").await?;
     }
 
     Ok(())
@@ -185,18 +176,10 @@ async fn poll(
     }
 
     if owner == 0 {
-        ctx.send(CreateReply::default()
-            .content("ERROR: PARTY DOES NOT EXIST")
-            .ephemeral(true)
-        ).await?;
-
+        say_eph(&ctx, "ERROR: PARTY DOES NOT EXIST").await?;
         return Ok(());
     } else if owner != ctx.author().id.get() {
-        ctx.send(CreateReply::default()
-            .content("ERROR: YOU ARE NOT THE HOST")
-            .ephemeral(true)
-        ).await?;
-
+        say_eph(&ctx, "ERROR: YOU ARE NOT THE HOST").await?;
         return Ok(());
     }
 
@@ -222,11 +205,7 @@ async fn poll(
     ).await?;
 
     // Reply & return
-    ctx.send(CreateReply::default()
-        .content("SUCCESS")
-        .ephemeral(true)
-    ).await?;
-
+    say_eph(&ctx, "SUCCESS").await?;
     Ok(())
 }
 
@@ -255,11 +234,7 @@ async fn ping(
     }
 
     if !in_party {
-        ctx.send(CreateReply::default()
-            .content("ERROR: YOU ARE NOT IN THAT PARTY")
-            .ephemeral(true)
-        ).await?;
-
+        say_eph(&ctx, "ERROR: YOU ARE NOT IN THAT PARTY").await?;
         return Ok(());
     }
 
@@ -286,18 +261,10 @@ async fn delete(
     }
 
     if owner == 0 {
-        ctx.send(CreateReply::default()
-            .content("PARTY DOES NOT EXIST")
-            .ephemeral(true)
-        ).await?;
-
+        say_eph(&ctx, "PARTY DOES NOT EXIST").await?;
         return Ok(());
     } else if owner != ctx.author().id.get() {
-        ctx.send(CreateReply::default()
-            .content("YOU ARE NOT THE HOST")
-            .ephemeral(true)
-        ).await?;
-
+        say_eph(&ctx, "YOU ARE NOT THE HOST").await?;
         return Ok(());
     }
 

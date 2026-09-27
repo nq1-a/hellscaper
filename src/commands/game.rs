@@ -1,9 +1,9 @@
 use tokio::time::{Duration, sleep};
 
-use poise::CreateReply;
 use poise::serenity_prelude::CreateMessage;
 
 use crate::{Context, Error};
+use crate::core::say_eph;
 
 #[poise::command(slash_command, subcommands(
     "timer",
@@ -51,10 +51,7 @@ async fn quicktime(
     #[description = "How long the player gets to answer (in seconds)"]
     time: u8,
 ) -> Result<(), Error> {
-    ctx.send(CreateReply::default()
-        .content("SUCCESS")
-        .ephemeral(true)
-    ).await?;
+    say_eph(&ctx, "SUCCESS").await?;
 
     let anchor = ctx.channel_id().send_message(
         &ctx.http(),
@@ -89,6 +86,5 @@ async fn quicktime(
     }
 
     anchor.reply(ctx, format!("{}\nCORRECT ANSWER: {}", ulist, answer.to_uppercase())).await?;
-
     Ok(())
 }

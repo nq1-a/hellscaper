@@ -6,6 +6,7 @@ use poise::serenity_prelude::{
 };
 
 use crate::{Context, Error};
+use crate::core::say_eph;
 use crate::types::data::Data;
 
 pub fn add_points(data: &Data, user: u64, pts: u64) {
@@ -74,30 +75,22 @@ async fn give(
     user: User,
 ) -> Result<(), Error> {
     if amount < 10 {
-        ctx.send(CreateReply::default()
-            .content("MUST GIVE AT LEAST 10 POINTS")
-            .ephemeral(true)
-        ).await?;
+        say_eph(&ctx, "MUST GIVE AT LEAST 10 POINTS").await?;
+        return Ok(());
     }
 
     let author = ctx.author().id.get();
     let target = user.id.get();
 
     if get_points(&ctx.data(), author) < amount {
-        ctx.send(CreateReply::default()
-            .content("YOU DO NOT HAVE ENOUGH POINTS")
-            .ephemeral(true)
-        ).await?;
+        say_eph(&ctx, "YOU DO NOT HAVE ENOUGH POINTS").await?;
+        return Ok(());
     }
 
     dec_points(&ctx.data(), author, amount);
     add_points(&ctx.data(), target, amount);
 
-    ctx.send(CreateReply::default()
-        .content("POINTS GIVEN")
-        .ephemeral(true)
-    ).await?;
-
+    say_eph(&ctx, "POINTS GIVEN").await?;
     Ok(())
 }
 
@@ -120,11 +113,7 @@ async fn leaderboard(ctx: Context<'_>) -> Result<(), Error> {
 
     // Check to see if we actually need to do anything
     if board.len() == 0 {
-        ctx.send(CreateReply::default()
-            .content("NO DATA!")
-            .ephemeral(true)
-        ).await?;
-
+        say_eph(&ctx, "NO DATA!").await?;
         return Ok(());
     }
 
@@ -169,17 +158,8 @@ async fn vanitynew(
         );
     }
 
-    if !valid {
-        ctx.send(CreateReply::default()
-            .content("VANITY ROLE SET")
-            .ephemeral(true)
-        ).await?;
-    } else {
-        ctx.send(CreateReply::default()
-            .content("THAT ROLE IS ALREADY A VANITY ROLE")
-            .ephemeral(true)
-        ).await?;
-    }
+    if !valid {say_eph(&ctx, "VANITY ROLE SET").await?;}
+    else      {say_eph(&ctx, "THAT ROLE IS ALREADY A VANITY ROLE").await?;}
 
     Ok(())
 }
@@ -281,11 +261,7 @@ async fn vanitylist(ctx: Context<'_>) -> Result<(), Error> {
 
     // Check to see if we actually need to do anything
     if board.len() == 0 {
-        ctx.send(CreateReply::default()
-            .content("NO VANITY ROLES CREATED")
-            .ephemeral(true)
-        ).await?;
-
+        say_eph(&ctx, "NO VANITY ROLES CREATED").await?;
         return Ok(());
     }
 

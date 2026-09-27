@@ -14,6 +14,7 @@ use poise::serenity_prelude::{
 use tokio::fs::read as read_async;
 
 use crate::{Context, Error};
+use crate::core::say_eph;
 
 #[poise::command(slash_command, subcommands(
     "save",
@@ -32,11 +33,7 @@ async fn save(
     desc: String,
 ) -> Result<(), Error> {
     if name.chars().count() > 32 || desc.chars().count() > 48 {
-        ctx.send(CreateReply::default()
-            .content("NAME/DESCRIPTION IS TOO LONG")
-            .ephemeral(true)
-        ).await?;
-
+        say_eph(&ctx, "NAME/DESCRIPTION IS TOO LONG").await?;
         return Ok(());
     }
 

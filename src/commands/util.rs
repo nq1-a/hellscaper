@@ -4,7 +4,6 @@ use std::fs::{
 
 use rand::Rng;
 
-use poise::CreateReply;
 use poise::serenity_prelude::{
     model::id::ChannelId,
 };
@@ -16,6 +15,7 @@ use crate::commands::level::{
     get_points,
     lvl_points
 };
+use crate::core::say_eph;
 use crate::types::gif::Gif;
 
 #[poise::command(
@@ -71,20 +71,14 @@ pub async fn sayraw(ctx: Context<'_>, text: String) -> Result<(), Error> {
 
     // TODO: Make this configurable
     if lvl_points(get_points(&ctx.data(), author_id)) >= 30 {
-        ctx.send(CreateReply::default()
-            .content("ON IT")
-            .ephemeral(true)
-        ).await?;
+        say_eph(&ctx, "ON IT").await?;
 
         channel.say(&ctx.http(), text
 			.replace("@everyone", "\\@everyone")
 			.replace("@here", "\\@here")
 		).await?;
     } else {
-        ctx.send(CreateReply::default()
-            .content("MUST BE AT LEAST LEVEL 30 TO USE SAYRAW")
-            .ephemeral(true)
-        ).await?;
+        say_eph(&ctx, "MUST BE AT LEAST LEVEL 30 TO USE SAYRAW").await?;
     }
 
     Ok(())

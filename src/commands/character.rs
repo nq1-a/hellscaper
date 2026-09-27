@@ -1,9 +1,9 @@
 use std::collections::HashMap;
 
-use poise::CreateReply;
 use poise::serenity_prelude::User;
 
 use crate::{Context, Error};
+use crate::core::say_eph;
 use crate::types::{
     chr::{Character, Stats},
     data::Data,
@@ -75,11 +75,7 @@ async fn new(
 ) -> Result<(), Error> {
     // Make sure iden is valid
     if iden.len() != 3 {
-        ctx.send(CreateReply::default()
-            .content("LENGTH OF IDENTIFIER MUST BE EXACTLY 3")
-            .ephemeral(true)
-        ).await?;
-
+        say_eph(&ctx, "LENGTH OF IDENTIFIER MUST BE EXACTLY 3").await?;
         return Ok(());
     }
 
@@ -97,11 +93,7 @@ async fn new(
     );
 
     if l_stats.is_err() {
-        ctx.send(CreateReply::default()
-            .content(l_stats.unwrap_err())
-            .ephemeral(true)
-        ).await?;
-
+        say_eph(&ctx, &l_stats.unwrap_err()).await?;
         return Ok(());
     };
 
@@ -148,11 +140,8 @@ async fn new(
     }
 
     // Send confirmation message
-    ctx.send(CreateReply::default()
-        .content(if valid {"A CHARACTER WITH THAT IDENTIFIER ALREADY EXISTS"}
-                 else     {"CHARACTER CREATED"})
-        .ephemeral(true)
-    ).await?;
+    say_eph(&ctx, if valid {"A CHARACTER WITH THAT IDENTIFIER ALREADY EXISTS"}
+                  else     {"CHARACTER CREATED"}).await?;
 
     // Wrap up
     Ok(())
@@ -181,11 +170,7 @@ async fn view(
         )
     } else {"CHARACTER NOT FOUND".to_string()};
 
-    ctx.send(CreateReply::default()
-        .content(view)
-        .ephemeral(true)
-    ).await?;
-
+    say_eph(&ctx, &view).await?;
     Ok(())
 }
 
@@ -246,10 +231,6 @@ async fn list(
         }
     }
 
-    ctx.send(CreateReply::default()
-        .content(list)
-        .ephemeral(true)
-    ).await?;
-
+    say_eph(&ctx, &list).await?;
     Ok(())
 }

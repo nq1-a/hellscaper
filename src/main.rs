@@ -18,6 +18,7 @@ use serenity::{
 use tokio::time::{Duration, sleep};
 
 mod commands;
+mod core;
 mod handler;
 mod types;
 
