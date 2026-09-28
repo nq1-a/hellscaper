@@ -50,13 +50,20 @@ async fn quicktime(
     answer: String,
     #[description = "How long the player gets to answer (in seconds)"]
     time: u8,
+    #[description = "Whether to show the time length or not (default False)"]
+    show_time: Option<bool>,
 ) -> Result<(), Error> {
     say_eph(&ctx, "SUCCESS").await?;
 
     let anchor = ctx.channel_id().send_message(
         &ctx.http(),
         CreateMessage::new()
-            .content(&format!("**QUICKTIME EVENT**\n{}", prompt))
+            .content(&format!(
+                "**QUICKTIME EVENT**\n{}{}",
+                if show_time.unwrap_or_default() {format!("{} seconds\n", time)}
+                else                             {"".to_string()},
+                prompt,
+            ))
     ).await?;
 
     let mid: u64 = anchor.id.get();
