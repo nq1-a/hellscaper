@@ -278,7 +278,7 @@ pub async fn clash(
                 stats.strength +
                 stats.skills.dexterity / 2,
         WRoll {
-            init_bar: 13,
+            init_bar: 11,
             crit_msg: "CRIT!",
             succ_msg: "VANTAGE",
             fail_msg: "COUNTER",
