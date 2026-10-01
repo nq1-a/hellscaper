@@ -298,7 +298,7 @@ pub async fn clash(
 pub async fn parkour(
     ctx: Context<'_>,
     #[description = "The unique ID of your character"] character: String,
-    #[description = "Your error"] epsilon: u32,
+    #[description = "Your error"] epsilon: u16,
     #[description = "List of modifiers to your attack"] flags: String,
 ) -> Result<(), Error> {
     return wroll(
@@ -315,13 +315,13 @@ pub async fn parkour(
                 stats.strength / 3 +
                 stats.skills.dexterity / 2,
         WRoll {
-            init_bar: epsilon,
+            init_bar: epsilon as i32,
             crit_msg: "CLEAR!",
             succ_msg: "CLEAR",
             fail_msg: "MISS",
             fumb_msg: "MISS",
-            tail_msg: &format!(", weapon: {:?}", weapon),
-            pre_bias: weapon.bias(),
+            tail_msg: "",
+            pre_bias: 0,
             n1_bar_d: 0,
         }
     ).await;
