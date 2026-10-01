@@ -289,3 +289,40 @@ pub async fn clash(
         }
     ).await;
 }
+
+
+#[poise::command(
+    slash_command,
+    description_localized("en-US", "Attempt a parkour action")
+)]
+pub async fn parkour(
+    ctx: Context<'_>,
+    #[description = "The unique ID of your character"] character: String,
+    #[description = "Your error"] epsilon: u32,
+    #[description = "List of modifiers to your attack"] flags: String,
+) -> Result<(), Error> {
+    return wroll(
+        ctx,
+        flags,
+        character,
+        |c, _ad, _n1_bar, _aux_bias| match c {
+            't' =>  3,
+            'w' =>  3,
+            'd' =>  4,
+            _   =>  0
+        },
+        |stats| stats.agility +
+                stats.strength / 3 +
+                stats.skills.dexterity / 2,
+        WRoll {
+            init_bar: epsilon,
+            crit_msg: "CLEAR!",
+            succ_msg: "CLEAR",
+            fail_msg: "MISS",
+            fumb_msg: "MISS",
+            tail_msg: &format!(", weapon: {:?}", weapon),
+            pre_bias: weapon.bias(),
+            n1_bar_d: 0,
+        }
+    ).await;
+}
