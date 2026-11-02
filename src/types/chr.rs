@@ -57,14 +57,15 @@ impl Stats {
     }
 
     pub fn skill(&mut self, skill: impl Into<String>) -> i32 {
-        *self.skills.entry(skill.into()).or_insert(0)
+        *self.skills.entry(skill.into().to_lowercase()).or_insert(0)
     }
 
-    // FIXME: Eliminate the double cloning
+    // FIXME: Eliminate the clone spaghetti
     pub fn skillup(&mut self, skill: impl Into<String> + Clone) {
-        if SKILLS.iter().position(|s| *s == skill.clone().into()).is_some() {
+        let lskill = skill.clone().into().to_lowercase();
+        if SKILLS.iter().position(|s| *s == lskill.clone()).is_some() {
             self.skill(skill.clone());
-            *self.skills.get_mut(&skill.into()).unwrap() += 1;
+            *self.skills.get_mut(&lskill).unwrap() += 1;
         }
     }
 
