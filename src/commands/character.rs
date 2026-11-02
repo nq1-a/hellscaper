@@ -25,6 +25,7 @@ pub fn get_char(
     else                           {return None;}
 }
 
+#[allow(dead_code)]
 pub fn upd_char(
     data: &Data,
     user: u64,
@@ -160,12 +161,15 @@ async fn view(
 ) -> Result<(), Error> {
     let target: u64 = user.as_ref().unwrap_or_else(|| ctx.author()).id.get();
 
-    let view: String = if let Some(c) = get_char(&ctx.data(), target, iden.clone()) {
-        format!("**{}** ({}){}\n\n{}",
+    let view: String = if let Some(mut c) = get_char(&ctx.data(), target, iden.clone()) {
+        let v = c.stats.view_skills();
+
+        format!("**{}** ({}){}\n\n{}\n\n{}",
             c.name,
             iden,
             if c.stats.sum() > 2 {"\nOVERRIDE"} else {""},
             c.stats,
+            v,
         )
     } else {"CHARACTER NOT FOUND".to_string()};
 

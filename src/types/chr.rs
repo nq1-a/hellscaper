@@ -4,6 +4,11 @@ use std::fmt::{Display, Formatter};
 
 use serde::{Serialize, Deserialize};
 
+const SKILLS: &[&str] = &[
+    "dexterity",
+    "elusion",
+];
+
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Stats {
     pub agility: i32,
@@ -11,7 +16,6 @@ pub struct Stats {
     pub intelligence: i32,
     pub resilience: i32,
     pub strength: i32,
-    #[serde(default)]
     pub skills: HashMap<String, i32>,
 }
 
@@ -52,8 +56,8 @@ impl Stats {
             .max(self.strength.abs())
     }
 
-    pub fn skill(&mut self, skill: &str) -> i32 {
-        *self.skills.entry(skill.to_string()).or_insert(0)
+    pub fn skill(&mut self, skill: impl Into<String>) -> i32 {
+        *self.skills.entry(skill.into()).or_insert(0)
     }
 
     pub fn sum(&self) -> i32 {
@@ -62,6 +66,20 @@ impl Stats {
         self.intelligence +
         self.resilience +
         self.strength
+    }
+
+    pub fn view_skills(&mut self) -> String {
+        let mut disp: String = String::new();
+
+        for s in SKILLS.iter() {
+            disp = format!("{}{}: {}\n",
+                disp,
+                s[0..3].to_uppercase(),
+                self.skill(*s),
+            );
+        }
+
+        return disp;
     }
 }
 
