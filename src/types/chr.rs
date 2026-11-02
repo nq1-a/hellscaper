@@ -60,6 +60,14 @@ impl Stats {
         *self.skills.entry(skill.into()).or_insert(0)
     }
 
+    // FIXME: Eliminate the double cloning
+    pub fn skillup(&mut self, skill: impl Into<String> + Clone) {
+        if SKILLS.iter().position(|s| *s == skill.clone().into()).is_some() {
+            self.skill(skill.clone());
+            *self.skills.get_mut(&skill.into()).unwrap() += 1;
+        }
+    }
+
     pub fn sum(&self) -> i32 {
         self.agility +
         self.charisma +

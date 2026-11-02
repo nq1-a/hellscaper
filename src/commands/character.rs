@@ -25,13 +25,12 @@ pub fn get_char(
     else                           {return None;}
 }
 
-#[allow(dead_code)]
 pub fn upd_char(
     data: &Data,
     user: u64,
     iden: String,
     mut f: impl FnMut(&mut Character) -> (),
-) {
+) -> bool {
     let mut characters = data.characters.lock().unwrap();
 
     if !characters.contains_key(&user) {
@@ -39,12 +38,16 @@ pub fn upd_char(
     };
 
     let cl = characters.get_mut(&user).unwrap();
-    if let Some(c) = cl.get_mut(&iden) {f(c);}
+    if let Some(c) = cl.get_mut(&iden) {
+        f(c);
+        return true;
+    } else {return false;}
 }
 
 #[poise::command(slash_command, subcommands(
     "new",
     "list",
+    "skillup",
     "view",
 ))]
 pub async fn character(_ctx: Context<'_>) -> Result<(), Error> {Ok(())}
@@ -172,6 +175,30 @@ async fn view(
             v,
         )
     } else {"CHARACTER NOT FOUND".to_string()};
+
+    say_eph(&ctx, &view).await?;
+    Ok(())
+}
+
+#[poise::command(
+    slash_command,
+    description_localized("en-US", "Add one to a skill for an existing character")
+)]
+async fn skillup(
+    ctx: Context<'_>,
+    #[description = "The character's identifier"]
+    iden: String,
+    #[description = "Whose character it is"]
+    user: Option<User>,
+    #[description = "Which skill to bump up"]
+    skill: String,
+) -> Result<(), Error> {
+    let target: u64 = user.as_ref().unwrap_or_else(|| ctx.author()).id.get();
+
+    let view: String = if upd_char(&ctx.data(), target, iden.clone(), |chr| {
+        chr.stats.skillup(skill.clone())
+    })   {"SKILL UPDATED".to_string()}
+    else {"CHARACTER NOT FOUND".to_string()};
 
     say_eph(&ctx, &view).await?;
     Ok(())
