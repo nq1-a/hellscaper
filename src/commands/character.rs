@@ -161,12 +161,11 @@ async fn view(
     let target: u64 = user.as_ref().unwrap_or_else(|| ctx.author()).id.get();
 
     let view: String = if let Some(c) = get_char(&ctx.data(), target, iden.clone()) {
-        format!("**{}** ({}){}\n\n{}\n\n{}",
+        format!("**{}** ({}){}\n\n{}",
             c.name,
             iden,
             if c.stats.sum() > 2 {"\nOVERRIDE"} else {""},
             c.stats,
-            c.stats.skills,
         )
     } else {"CHARACTER NOT FOUND".to_string()};
 

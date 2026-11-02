@@ -1,13 +1,8 @@
+use std::collections::HashMap;
 use std::fmt;
 use std::fmt::{Display, Formatter};
 
 use serde::{Serialize, Deserialize};
-
-#[derive(Clone, Debug, Default, Serialize, Deserialize)]
-pub struct Skills {
-    pub dexterity: i32,
-    pub elusion: i32,
-}
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Stats {
@@ -17,7 +12,7 @@ pub struct Stats {
     pub resilience: i32,
     pub strength: i32,
     #[serde(default)]
-    pub skills: Skills,
+    pub skills: HashMap<String, i32>,
 }
 
 impl Stats {
@@ -35,7 +30,7 @@ impl Stats {
             intelligence,
             resilience,
             strength,
-            skills: Default::default(),
+            skills: HashMap::new(),
         };
 
         if stats.sum() > 2 && !max_override {
@@ -57,23 +52,16 @@ impl Stats {
             .max(self.strength.abs())
     }
 
+    pub fn skill(&mut self, skill: &str) -> i32 {
+        *self.skills.entry(skill.to_string()).or_insert(0)
+    }
+
     pub fn sum(&self) -> i32 {
         self.agility +
         self.charisma +
         self.intelligence +
         self.resilience +
         self.strength
-    }
-}
-
-impl Display for Skills {
-    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
-        write!(
-            f,
-            "DEX: {}\nELU: {}",
-            self.dexterity,
-            self.elusion,
-        )
     }
 }
 

@@ -16,7 +16,7 @@ async fn wroll(
     // Conditions for flags
     mut flag_cons: impl FnMut(char, &mut i32, &mut i32, &mut i32) -> i32,
     // Conditions for stats
-    stat_cons: impl Fn(&Stats) -> i32,
+    mut stat_cons: impl FnMut(&mut Stats) -> i32,
     // Constant settings
     settings: WRoll<'_>,
 ) -> Result<(), Error> {
@@ -38,8 +38,8 @@ async fn wroll(
 
     if let Some(chr) = get_char(&ctx.data(), author, iden_c.to_lowercase()) {
         valid = true;
-        let chr_u: Character = chr;
-        bar -= stat_cons(&chr_u.stats);
+        let mut chr_u: Character = chr;
+        bar -= stat_cons(&mut chr_u.stats);
         chr_name = chr_u.name.clone();
     }
 
@@ -158,7 +158,7 @@ pub async fn shoot(
         |stats| if weapon.aoe() {1} else {stats.agility / 2} +
                 stats.intelligence / 2 +
                 if weapon.innate() {stats.strength} else {0} +
-                stats.skills.dexterity,
+                stats.skill("dexterity"),
         WRoll {
             init_bar: 11 - weapon.bias(),
             crit_msg: "CRIT!",
@@ -237,7 +237,7 @@ async fn blast(
         },
         |stats| stats.agility / 3 +
                 stats.resilience +
-                stats.skills.elusion,
+                stats.skill("elusion"),
         WRoll {
             init_bar: 9,
             crit_msg: "UNSCATHED",
@@ -276,7 +276,7 @@ pub async fn clash(
         },
         |stats| stats.agility / 2 +
                 stats.strength +
-                stats.skills.dexterity / 2,
+                stats.skill("dexterity") / 2,
         WRoll {
             init_bar: 11,
             crit_msg: "CRIT!",
@@ -313,7 +313,7 @@ pub async fn parkour(
         },
         |stats| stats.agility +
                 stats.strength / 3 +
-                stats.skills.dexterity / 2,
+                stats.skill("dexterity") / 2,
         WRoll {
             init_bar: epsilon as i32,
             crit_msg: "CLEAR!",
