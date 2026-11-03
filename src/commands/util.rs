@@ -4,7 +4,9 @@ use std::fs::{
 
 use rand::Rng;
 
+use poise::CreateReply;
 use poise::serenity_prelude::{
+    CreateAllowedMentions,
     model::id::ChannelId,
 };
 
@@ -37,7 +39,10 @@ pub async fn help(ctx: Context<'_>, command: Option<String>) -> Result<(), Error
         .replace(&['/', '\\'], "");
 
     if let Ok(t) = read_fs(String::from("help/") + &command_san + &String::from(".md")) {
-        ctx.say(t).await?;
+        ctx.send(CreateReply::default()
+            .content(t)
+            .allowed_mentions(CreateAllowedMentions::new().empty_users())
+        ).await?;
     } else {
         ctx.say("NO HELP PAGE FOUND FOR THAT COMMAND").await?;
     }
