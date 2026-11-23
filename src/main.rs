@@ -208,6 +208,7 @@ async fn main() {
                     &read_fs("state.json").unwrap_or_default()
                 ).unwrap_or_default();
 
+                data.funds = Default::default();
                 data.ready = Mutex::new(false);
                 data.quicktime = Default::default();
                 data.load_cfg("config.toml");

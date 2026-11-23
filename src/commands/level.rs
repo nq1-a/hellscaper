@@ -1,3 +1,5 @@
+use tokio::time::{Duration, sleep};
+
 use poise::CreateReply;
 use poise::serenity_prelude::{
     CreateAllowedMentions,
@@ -8,6 +10,10 @@ use poise::serenity_prelude::{
 use crate::{Context, Error};
 use crate::core::say_eph;
 use crate::types::data::Data;
+
+pub const FUND_CYCLES: u64 = FUND_TIMEOUT << FUND_DIVISIONS;
+pub const FUND_DIVISIONS: u64 = 1;
+pub const FUND_TIMEOUT: u64 = 30;
 
 pub fn add_points(data: &Data, user: u64, pts: u64) {
     let mut points = data.points.lock().unwrap();
@@ -35,6 +41,8 @@ pub fn lvl_points(pts: u64) -> u64 {
 #[poise::command(slash_command, subcommands(
     "view",
     "give",
+    "fund",
+    "signfund",
     "leaderboard",
     "vanitynew",
     "vanityequip",
@@ -79,8 +87,8 @@ async fn give(
         return Ok(());
     }
 
-    let author = ctx.author().id.get();
-    let target = user.id.get();
+    let author: u64 = ctx.author().id.get();
+    let target: u64 = user.id.get();
 
     if get_points(&ctx.data(), author) < amount {
         say_eph(&ctx, "YOU DO NOT HAVE ENOUGH POINTS").await?;
@@ -91,6 +99,101 @@ async fn give(
     add_points(&ctx.data(), target, amount);
 
     say_eph(&ctx, "POINTS GIVEN").await?;
+    Ok(())
+}
+
+#[poise::command(
+    slash_command,
+    description_localized("en-US", "Give the bot's points to a person"),
+    required_permissions = "ADMINISTRATOR"
+)]
+async fn fund(
+    ctx: Context<'_>,
+    #[description = "The amount of points to give"]
+    amount: u64,
+    #[description = "Who to give them to"]
+    user: User,
+) -> Result<(), Error> {
+    // Set everything up
+    if amount < 10 {
+        say_eph(&ctx, "MUST FUND AT LEAST 10 POINTS").await?;
+        return Ok(());
+    }
+
+    let bot_uid: u64 = ctx.data().config
+        .get("bot_uid")
+        .unwrap()
+        .parse::<u64>()?;
+
+    let author: u64 = ctx.author().id.get();
+    let target: u64 = user.id.get();
+    let tid: String = format!("{:x}", ctx.id());
+
+    if get_points(&ctx.data(), bot_uid) < amount {
+        say_eph(&ctx, "THE BOT DOES NOT HAVE ENOUGH POINTS").await?;
+        return Ok(());
+    }
+
+    // Wait for signature
+    ctx.say(format!("**FUNDING {} POINTS TO <@{}>**
+Another manager must sign by calling `/level signfund id:{}`
+-# THIS TRANSACTION WILL AUTOMATICALLY CANCEL IN {} SECONDS",
+        amount,
+        target,
+        tid.as_str(),
+        FUND_TIMEOUT,
+    )).await?;
+
+    {
+        let mut funds = ctx.data().funds.lock().unwrap();
+        funds.insert(tid.clone(), (author, target, false));
+    }
+
+    let mut cycles: u64 = 0;
+    while cycles < FUND_CYCLES && !ctx.data().funds
+        .lock()
+        .unwrap()
+        .get(&tid)
+        .unwrap().2
+    {
+        sleep(Duration::from_millis(1000 >> FUND_DIVISIONS)).await;
+        cycles += 1;
+    }
+
+    // Transfer points
+    if cycles < FUND_CYCLES {
+        dec_points(&ctx.data(), bot_uid, amount);
+        add_points(&ctx.data(), target, amount);
+        ctx.say("POINTS GIVEN").await?;
+    } else {ctx.say("TRANSACTION TIMED OUT").await?;}
+
+    Ok(())
+}
+
+#[poise::command(
+    slash_command,
+    description_localized("en-US", "Sign a fund to give the bot's points away"),
+    required_permissions = "ADMINISTRATOR"
+)]
+async fn signfund(
+    ctx: Context<'_>,
+    #[description = "The ID of the transaction"]
+    id: String,
+) -> Result<(), Error> {
+    let author: u64 = ctx.author().id.get();
+    let mut success: bool = false;
+
+    {
+        let mut funds = ctx.data().funds.lock().unwrap();
+        if let Some(signees) = funds.get_mut(&id) {
+            success = !(signees.0 == author || signees.1 == author);
+            signees.2 = success;
+        }
+    }
+
+    if success {say_eph(&ctx, "TRANSACTION SIGNED").await?;}
+    else {say_eph(&ctx, "SIGNING FAILED (ARE YOU IN THE TRANSACTION?)").await?;}
+
     Ok(())
 }
 
