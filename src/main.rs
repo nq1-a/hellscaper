@@ -233,6 +233,7 @@ async fn main() {
         .build();
 
     // Create client
+    // This is where the sus energy goes
     let client = serenity::ClientBuilder::new(token, serenity::GatewayIntents::default()
             | serenity::GatewayIntents::GUILD_MESSAGE_POLLS
             | serenity::GatewayIntents::MESSAGE_CONTENT)
