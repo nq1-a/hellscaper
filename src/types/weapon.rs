@@ -128,7 +128,7 @@ impl RangedWeapon {
         match self {
             Self::pipe          => "BOOM!",
             Self::server_ban    => "DEMOTED",
-            Self::spit          => "TOO DRY",
+            Self::spit          => "DEHYDRATED",
             Self::thrown_expl   => "BACKFIRED",
             _                   => "JAMMED"
         }
