@@ -200,7 +200,7 @@ pub async fn learn(
         },
         |stats| stats.intelligence,
         WRoll {
-            init_bar: 10,
+            init_bar: 12,
             crit_msg: "EUREKA!",
             succ_msg: "LEARNED",
             fail_msg: "FAILED",
@@ -235,7 +235,7 @@ async fn blast(
             'n' =>  6,
             _   =>  0
         },
-        |stats| stats.agility / 3 +
+        |stats| stats.agility / 2 +
                 stats.resilience +
                 stats.skill("elusion"),
         WRoll {

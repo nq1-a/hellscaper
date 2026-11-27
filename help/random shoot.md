@@ -30,3 +30,11 @@ Flags:
 - **v**ision difficulty (+3)
 - lo**w** projectile speed (+3)
 - **f**ar (+5)
+
+Stat bonuses:
+- Agility (1/2 if non-AOE)
+- Intelligence (1/2)
+- Strength (1 if innate)
+
+Skill bonuses:
+- Dexterity (1)

@@ -9,3 +9,10 @@ Flags:
 - **t**ired (+3)
 - **w**et (+3)
 - **d**isoriented (+4)
+
+Stat bonuses:
+- Agility (1)
+- Strength (1/3)
+
+Skill bonuses:
+- Dexterity (1/2)

@@ -11,3 +11,10 @@ Flags:
 - **f**ar (-5)
 - **t**argeted (+3)
 - **n**ear (+6)
+
+Stat bonuses:
+- Agility (1/2)
+- Resilience (1)
+
+Skill bonuses:
+- Elusion (1)

@@ -15,3 +15,10 @@ Flags:
 - **r**eplinished (-2)
 - **t**ired (+3)
 - d**i**soriented (+4)
+
+Stat bonuses:
+- Agility (1/2)
+- Strength (1)
+
+Skill bonuses:
+- Dexterity (1/2)
