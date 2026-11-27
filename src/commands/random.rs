@@ -86,6 +86,7 @@ async fn wroll(
     "clash",
     "flip",
     "learn",
+    "parkour",
     "roll",
     "shoot",
 ))]
@@ -319,7 +320,7 @@ pub async fn parkour(
             crit_msg: "CLEAR!",
             succ_msg: "CLEAR",
             fail_msg: "MISS",
-            fumb_msg: "MISS",
+            fumb_msg: "SLIP",
             tail_msg: "",
             pre_bias: 0,
             n1_bar_d: 0,
