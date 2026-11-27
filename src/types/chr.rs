@@ -7,6 +7,7 @@ use serde::{Serialize, Deserialize};
 const SKILLS: &[&str] = &[
     "dexterity",
     "elusion",
+    "wisdom",
 ];
 
 #[derive(Clone, Debug, Serialize, Deserialize)]

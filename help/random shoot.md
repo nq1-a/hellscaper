@@ -38,3 +38,4 @@ Stat bonuses:
 
 Skill bonuses:
 - Dexterity (1)
+- Wisdom (1/2)

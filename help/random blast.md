@@ -18,3 +18,4 @@ Stat bonuses:
 
 Skill bonuses:
 - Elusion (1)
+- Wisdom (1/2)

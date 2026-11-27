@@ -159,7 +159,8 @@ pub async fn shoot(
         |stats| if weapon.aoe() {1} else {stats.agility / 2} +
                 stats.intelligence / 2 +
                 if weapon.innate() {stats.strength} else {0} +
-                stats.skill("dexterity"),
+                stats.skill("dexterity") +
+                stats.skill("wisdom") / 2,
         WRoll {
             init_bar: 11 - weapon.bias(),
             crit_msg: "CRIT!",
@@ -199,7 +200,8 @@ pub async fn learn(
             'i' =>  5,
             _   =>  0
         },
-        |stats| stats.intelligence,
+        |stats| stats.intelligence +
+                stats.skill("wisdom"),
         WRoll {
             init_bar: 12,
             crit_msg: "EUREKA!",
@@ -238,7 +240,8 @@ async fn blast(
         },
         |stats| stats.agility / 2 +
                 stats.resilience +
-                stats.skill("elusion"),
+                stats.skill("elusion") +
+                stats.skill("wisdom") / 2,
         WRoll {
             init_bar: 9,
             crit_msg: "UNSCATHED",
@@ -277,7 +280,8 @@ pub async fn clash(
         },
         |stats| stats.agility / 2 +
                 stats.strength +
-                stats.skill("dexterity") / 2,
+                stats.skill("dexterity") / 2 +
+                stats.skill("wisdom") / 2,
         WRoll {
             init_bar: 11,
             crit_msg: "CRIT!",

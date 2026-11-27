@@ -18,3 +18,6 @@ Flags:
 
 Stat bonuses:
 - Intelligence (1)
+
+Skill bonuses:
+- Wisdom (1)
