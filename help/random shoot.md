@@ -22,7 +22,6 @@ Flags:
 - **n**ear (-4)
 - **d**istracted (-3)
 - **g**eneral buff (-3)
-- **s**plash damage (-3)
 - **l**ong charge (-2)
 - **o**pen (0)
 - fluid **a**bsorption (+1)
